@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import type { User } from '@supabase/supabase-js'
+import type { Provider, User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import type { Profile } from '../lib/types'
 
@@ -9,6 +9,7 @@ interface AuthContextType {
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null }>
+  signInWithOAuth: (provider: Provider) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: string | null }>
 }
@@ -87,6 +88,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: {
         data: { display_name: displayName },
+        // Explicit so confirmation emails land back on whatever origin the
+        // user actually signed up from, instead of relying solely on the
+        // Site URL configured in the Supabase dashboard. That origin still
+        // needs to be on the project's Redirect URLs allow-list.
+        emailRedirectTo: window.location.origin,
       },
     })
 
@@ -103,6 +109,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return { error: null }
+  }
+
+  const signInWithOAuth = async (provider: Provider) => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: window.location.origin },
+    })
+    return { error: error?.message ?? null }
   }
 
   const signOut = async () => {
@@ -127,7 +141,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, updateProfile }}>
+    <AuthContext.Provider
+      value={{ user, profile, loading, signIn, signUp, signInWithOAuth, signOut, updateProfile }}
+    >
       {children}
     </AuthContext.Provider>
   )
