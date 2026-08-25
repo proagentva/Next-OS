@@ -33,16 +33,17 @@ This controls where confirmation, magic-link, and OAuth redirects land. If it's 
 default (`http://localhost:5173`), auth emails will verify successfully server-side but the browser's
 final redirect after clicking the link will fail to load.
 
-## Social login (Google / Apple)
+## Social login (Google)
 
-The login page has "Continue with Google" / "Continue with Apple" buttons wired up in code, but each
-provider needs to be enabled and configured in Supabase Dashboard > Authentication > Providers with
-credentials from that provider's own developer console (Google Cloud Console / Apple Developer). Until
-a provider is enabled there, its button will show an error when clicked.
+The login page has a "Continue with Google" button wired up in code, but Google needs to be enabled
+and configured in Supabase Dashboard > Authentication > Providers with a Client ID/Secret from Google
+Cloud Console (free, no billing account needed). Until it's enabled there, the button will show an
+error when clicked.
 
 ## Edge Functions
 
-`supabase/functions/generate-report` calls the Anthropic API server-side to generate a written report
-narrative. Requires the `ANTHROPIC_API_KEY` secret to be set on the Supabase project
-(`supabase secrets set ANTHROPIC_API_KEY=...`). Without it, the function still returns the underlying
-data tables, just without the AI narrative.
+`supabase/functions/generate-report` calls Google's Gemini API server-side to generate a written report
+narrative. Gemini has a generous free tier that requires no billing account. Get a key at
+[aistudio.google.com/apikey](https://aistudio.google.com/apikey) and set it as the `GEMINI_API_KEY`
+secret on the Supabase project (`supabase secrets set GEMINI_API_KEY=...`). Without it, the function
+still returns the underlying data tables, just without the AI narrative.

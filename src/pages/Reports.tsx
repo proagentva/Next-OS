@@ -231,7 +231,7 @@ export default function Reports({ year }: { year: number }) {
             {narrativeError ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-600">
                 {narrativeError}
-                <p className="mt-2 text-xs text-ink-500">The AI narrative requires an Anthropic API key configured as an edge function secret. The data tables above are fully functional without it.</p>
+                <p className="mt-2 text-xs text-ink-500">The AI narrative requires a Gemini API key configured as an edge function secret. The data tables above are fully functional without it.</p>
               </div>
             ) : narrative ? (
               <div className="prose prose-sm max-w-none text-ink-700 whitespace-pre-wrap">{narrative}</div>

@@ -14,15 +14,6 @@ function GoogleIcon() {
   )
 }
 
-function AppleIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 17 20" aria-hidden="true" fill="currentColor">
-      <path d="M14.1 10.6c0-2.1 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.7-1.3-.1-2.5.8-3.1.8-.6 0-1.6-.7-2.7-.7-1.4 0-2.7.8-3.4 2-1.5 2.5-.4 6.3 1 8.3.7 1 1.5 2.1 2.6 2 1-.1 1.4-.7 2.7-.7s1.6.7 2.7.6c1.1 0 1.8-1 2.5-2 .8-1.2 1.1-2.3 1.1-2.4-.1 0-2.1-.8-2.2-3z" />
-      <path d="M11.9 4.1c.6-.7 1-1.7.9-2.7-.9 0-2 .6-2.6 1.3-.5.6-1 1.6-.9 2.6 1 .1 1.9-.5 2.6-1.2z" />
-    </svg>
-  )
-}
-
 export default function AuthPage() {
   const { signIn, signUp, signInWithOAuth } = useAuth()
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
@@ -59,9 +50,9 @@ export default function AuthPage() {
     setLoading(false)
   }
 
-  const handleOAuth = async (provider: 'google' | 'apple') => {
+  const handleGoogleSignIn = async () => {
     setError(null)
-    const { error } = await signInWithOAuth(provider)
+    const { error } = await signInWithOAuth('google')
     if (error) setError(error)
   }
 
@@ -94,22 +85,14 @@ export default function AuthPage() {
             </button>
           </div>
 
-          <div className="space-y-2 mb-6">
+          <div className="mb-6">
             <button
               type="button"
-              onClick={() => handleOAuth('google')}
+              onClick={handleGoogleSignIn}
               className="btn-secondary w-full justify-center"
             >
               <GoogleIcon />
               Continue with Google
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOAuth('apple')}
-              className="btn-secondary w-full justify-center"
-            >
-              <AppleIcon />
-              Continue with Apple
             </button>
           </div>
 
