@@ -6,7 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+const GEMINI_MODEL = "gemini-2.0-flash";
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -24,11 +25,11 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    if (!ANTHROPIC_API_KEY) {
+    if (!GEMINI_API_KEY) {
       return new Response(
         JSON.stringify({
           error:
-            "AI narrative not available — ANTHROPIC_API_KEY is not configured as an edge function secret. The data tables in the report are fully functional without it.",
+            "AI narrative not available — GEMINI_API_KEY is not configured as an edge function secret. The data tables in the report are fully functional without it.",
         }),
         {
           status: 200,
@@ -117,20 +118,21 @@ Produce the report in the following structure:
 
 Keep it concise, professional, and grounded strictly in the provided numbers. Do not state any figure that is not in the data above.`;
 
-    // Call Anthropic API
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 2000,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
+    // Call Google's Gemini API (free tier — no billing account required)
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY,
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 2000 },
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errText = await response.text();
@@ -146,7 +148,8 @@ Keep it concise, professional, and grounded strictly in the provided numbers. Do
     }
 
     const result = await response.json();
-    const report = result.content?.[0]?.text || "No report generated.";
+    const report =
+      result.candidates?.[0]?.content?.parts?.[0]?.text || "No report generated.";
 
     return new Response(JSON.stringify({ report }), {
       status: 200,
