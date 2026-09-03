@@ -16,6 +16,7 @@ import Profile from './pages/Profile'
 import Team from './pages/Team'
 import DealSheet from './pages/DealSheet'
 import DealRoster from './pages/DealRoster'
+import Kanban from './pages/Kanban'
 
 // Capture an invite token from /invite/:token before any auth/org logic
 // runs, and stash it in sessionStorage rather than relying on the URL —
@@ -62,6 +63,7 @@ function AppContent() {
       case 'settings': return <Settings year={year} />
       case 'deals': return <DealSheet />
       case 'deal_roster': return <DealRoster />
+      case 'kanban': return <Kanban />
       case 'team': return <Team />
       case 'profile': return <Profile />
       default: return <Dashboard year={year} />

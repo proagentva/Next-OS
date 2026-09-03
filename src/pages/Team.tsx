@@ -16,6 +16,7 @@ const TAB_LABELS: Record<string, string> = {
   settings: 'Settings',
   deals: 'Deal Sheet',
   deal_roster: 'Daily Deals',
+  kanban: 'Task Manager',
   team: 'Team',
   profile: 'Profile',
 }
