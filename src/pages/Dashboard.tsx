@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
-import { getAcqRollupByQuarter, getDispoRollupByQuarter, getFinancialRollupByQuarter, getMonthlyNetProfit, getMarketingCostByChannel } from '../lib/rollups'
+import { getAcqRollupByQuarter, getDispoRollupByQuarter, getFinancialRollupByQuarter, getMonthlyNetProfit, getMarketingCostByChannel, getRangeSummary, type RangeSummary } from '../lib/rollups'
 import { formatCurrency, formatNumber, safeRate } from '../lib/utils'
 import { useTheme } from '../contexts/ThemeContext'
 import { getBucketColor } from '../lib/colors'
+import { useDateRange, DateRangeSelector } from '../components/DateRangeSelector'
 import type { AcqRollup, DispoRollup, FinancialRollup, MarketingRollup } from '../lib/types'
 import { TrendingUp, TrendingDown, DollarSign, Phone, FileCheck, Target } from 'lucide-react'
 
@@ -66,6 +67,21 @@ export default function Dashboard({ year }: { year: number }) {
   const [dispo, setDispo] = useState<Record<string, DispoRollup>>({})
   const [monthlyNet, setMonthlyNet] = useState<{ month: string; net: number }[]>([])
   const [marketing, setMarketing] = useState<MarketingRollup[]>([])
+  const dateRange = useDateRange()
+  const [rangeSummary, setRangeSummary] = useState<RangeSummary | null>(null)
+  const [rangeLoading, setRangeLoading] = useState(false)
+
+  useEffect(() => {
+    if (!dateRange.range.from || !dateRange.range.to) {
+      setRangeSummary(null)
+      return
+    }
+    setRangeLoading(true)
+    getRangeSummary(dateRange.range.from, dateRange.range.to)
+      .then(setRangeSummary)
+      .catch(e => console.error('Range summary error:', e))
+      .finally(() => setRangeLoading(false))
+  }, [dateRange.range.from, dateRange.range.to])
 
   useEffect(() => {
     (async () => {
@@ -131,6 +147,31 @@ export default function Dashboard({ year }: { year: number }) {
           <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Dashboard</h1>
           <p className="text-sm text-ink-500 dark:text-ink-400">Year {year} — YTD overview</p>
         </div>
+      </div>
+
+      {/* Date Range Summary — additive, doesn't affect the quarterly views below */}
+      <div className="card p-5 space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h2 className="text-base font-semibold text-ink-900 dark:text-ink-50">Range Summary</h2>
+            <p className="text-xs text-ink-500 dark:text-ink-400">{dateRange.range.label}</p>
+          </div>
+          <DateRangeSelector {...dateRange} />
+        </div>
+        {dateRange.preset === 'custom' && (!dateRange.customFrom || !dateRange.customTo) ? (
+          <p className="text-sm text-ink-400 dark:text-ink-500">Pick a start and end date above.</p>
+        ) : rangeLoading || !rangeSummary ? (
+          <div className="text-sm text-ink-400 dark:text-ink-500">Loading...</div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <StatCard icon={DollarSign} label="Income" value={formatCurrency(rangeSummary.income)} color="accent" />
+            <StatCard icon={TrendingDown} label="Expenses" value={formatCurrency(rangeSummary.expenses)} color="red" />
+            <StatCard icon={TrendingUp} label="Net Profit" value={formatCurrency(rangeSummary.net_profit)} color={rangeSummary.net_profit >= 0 ? 'accent' : 'red'} />
+            <StatCard icon={Phone} label="ACQ Dials" value={formatNumber(rangeSummary.acq_dials)} color="ink" />
+            <StatCard icon={FileCheck} label="ACQ Contracts" value={formatNumber(rangeSummary.acq_contracts)} color="ink" />
+            <StatCard icon={Target} label="Dispo Deals Locked" value={formatNumber(rangeSummary.dispo_deals_locked)} color="ink" />
+          </div>
+        )}
       </div>
 
       {/* YTD Highlight Cards */}

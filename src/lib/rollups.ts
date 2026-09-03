@@ -278,6 +278,42 @@ export async function getUnmappedCategories(year: number): Promise<string[]> {
 }
 
 // ============================================================
+// ARBITRARY DATE-RANGE SUMMARY (Dashboard range selector)
+// ============================================================
+
+export interface RangeSummary {
+  income: number
+  expenses: number
+  net_profit: number
+  acq_dials: number
+  acq_contracts: number
+  dispo_deals_locked: number
+}
+
+// Plain date BETWEEN filter — works identically for any preset (day, week,
+// month, quarter, year, or a fully custom range), since the caller computes
+// `from`/`to` client-side. No need to route through the generated
+// year/month/quarter columns the other rollups use.
+export async function getRangeSummary(from: string, to: string): Promise<RangeSummary> {
+  const [ledgerRes, acqRes, dispoRes] = await Promise.all([
+    supabase.from('ledger_entries').select('income_amt,expense_amt').gte('date', from).lte('date', to),
+    supabase.from('acq_activity').select('dials,contracts').gte('date', from).lte('date', to),
+    supabase.from('dispo_activity').select('deals_locked_up').gte('date', from).lte('date', to),
+  ])
+  if (ledgerRes.error) throw ledgerRes.error
+  if (acqRes.error) throw acqRes.error
+  if (dispoRes.error) throw dispoRes.error
+
+  const income = (ledgerRes.data || []).reduce((s, r) => s + Number(r.income_amt), 0)
+  const expenses = (ledgerRes.data || []).reduce((s, r) => s + Number(r.expense_amt), 0)
+  const acq_dials = (acqRes.data || []).reduce((s, r) => s + (r.dials || 0), 0)
+  const acq_contracts = (acqRes.data || []).reduce((s, r) => s + (r.contracts || 0), 0)
+  const dispo_deals_locked = (dispoRes.data || []).reduce((s, r) => s + (r.deals_locked_up || 0), 0)
+
+  return { income, expenses, net_profit: income - expenses, acq_dials, acq_contracts, dispo_deals_locked }
+}
+
+// ============================================================
 // COMBINED DATA FOR REPORTS
 // ============================================================
 
