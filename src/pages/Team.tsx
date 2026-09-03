@@ -14,6 +14,8 @@ const TAB_LABELS: Record<string, string> = {
   quarterly: 'Quarterly View',
   reports: 'Reports',
   settings: 'Settings',
+  deals: 'Deal Sheet',
+  deal_roster: 'Daily Deals',
   team: 'Team',
   profile: 'Profile',
 }

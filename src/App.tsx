@@ -14,6 +14,8 @@ import Settings from './pages/Settings'
 import Reports from './pages/Reports'
 import Profile from './pages/Profile'
 import Team from './pages/Team'
+import DealSheet from './pages/DealSheet'
+import DealRoster from './pages/DealRoster'
 
 // Capture an invite token from /invite/:token before any auth/org logic
 // runs, and stash it in sessionStorage rather than relying on the URL —
@@ -58,6 +60,8 @@ function AppContent() {
       case 'quarterly': return <QuarterlyView year={year} />
       case 'reports': return <Reports year={year} />
       case 'settings': return <Settings year={year} />
+      case 'deals': return <DealSheet />
+      case 'deal_roster': return <DealRoster />
       case 'team': return <Team />
       case 'profile': return <Profile />
       default: return <Dashboard year={year} />

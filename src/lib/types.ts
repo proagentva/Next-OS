@@ -91,7 +91,7 @@ export interface Profile {
 // subset each member is granted (organization_members.allowed_tabs) varies.
 export const ORG_TAB_IDS = [
   'dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly',
-  'reports', 'settings', 'team', 'profile',
+  'reports', 'settings', 'deals', 'deal_roster', 'team', 'profile',
 ] as const
 export type OrgTabId = typeof ORG_TAB_IDS[number]
 
@@ -127,6 +127,48 @@ export interface OrganizationInvite {
   created_by: string | null
   expires_at: string | null
   used_at: string | null
+  created_at: string
+}
+
+export const DEAL_TYPES = ['Wholesale', 'Novation', 'JV', 'Retail Listing', 'Subto'] as const
+export type DealType = typeof DEAL_TYPES[number]
+
+export const DEAL_STATUSES = ['UC', 'FALL OUT', 'Sold', 'Test'] as const
+export type DealStatus = typeof DEAL_STATUSES[number]
+
+export const ROSTER_STATUSES = [
+  'No Contact Made', 'Warm Lead', 'Follow Up', 'Offers Made', 'Under Contract', 'Referred to Agent',
+] as const
+export type RosterStatus = typeof ROSTER_STATUSES[number]
+
+export interface Deal {
+  id: string
+  organization_id: string
+  date_locked: string
+  address: string
+  expected_profit: number | null
+  type: string
+  expected_closing_date: string | null
+  status: string
+  comments: string | null
+  created_by: string | null
+  created_at: string
+}
+
+export interface DealRosterEntry {
+  id: string
+  organization_id: string
+  date_added: string
+  full_name: string
+  address: string | null
+  lead_source: string | null
+  status: string
+  notes: string | null
+  next_touch: string | null
+  agenda: string | null
+  deal_type: string | null
+  owner: string | null
+  created_by: string | null
   created_at: string
 }
 
