@@ -3,6 +3,7 @@ import { BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, Cart
 import { getAcqRollupByQuarter, getDispoRollupByQuarter, getFinancialRollupByQuarter, getMonthlyNetProfit, getMarketingCostByChannel } from '../lib/rollups'
 import { formatCurrency, formatNumber, safeRate } from '../lib/utils'
 import { useTheme } from '../contexts/ThemeContext'
+import { getBucketColor } from '../lib/colors'
 import type { AcqRollup, DispoRollup, FinancialRollup, MarketingRollup } from '../lib/types'
 import { TrendingUp, TrendingDown, DollarSign, Phone, FileCheck, Target } from 'lucide-react'
 
@@ -32,19 +33,6 @@ const DISPO_METRICS = [
   { key: 'deals_locked_up', label: 'Deals Locked Up' },
 ]
 
-const BUCKET_COLORS_LIGHT: Record<string, string> = {
-  Acquisition: '#10b981',
-  Processing: '#3b82f6',
-  Commissions: '#f59e0b',
-  Admin: '#6366f1',
-  Misc: '#94a3b8',
-  'Non-Operating': '#ec4899',
-}
-
-function getBucketColors(dark: boolean): Record<string, string> {
-  return dark ? { ...BUCKET_COLORS_LIGHT, Misc: '#cbd5e1' } : BUCKET_COLORS_LIGHT
-}
-
 function useChartColors() {
   const { theme } = useTheme()
   const dark = theme === 'dark'
@@ -67,7 +55,6 @@ function useChartColors() {
 
 export default function Dashboard({ year }: { year: number }) {
   const colors = useChartColors()
-  const bucketColors = getBucketColors(colors.dark)
   const tooltipStyle = {
     contentStyle: { backgroundColor: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8 },
     labelStyle: { color: colors.tooltipText },
@@ -296,7 +283,7 @@ export default function Dashboard({ year }: { year: number }) {
             <PieChart>
               <Pie data={expenseBreakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={(e: any) => e.name}>
                 {expenseBreakdown.map((entry, i) => (
-                  <Cell key={i} fill={bucketColors[entry.name] || (colors.dark ? '#cbd5e1' : '#94a3b8')} />
+                  <Cell key={i} fill={getBucketColor(entry.name).dark} />
                 ))}
               </Pie>
               <Tooltip formatter={(v: number) => formatCurrency(v)} {...tooltipStyle} />

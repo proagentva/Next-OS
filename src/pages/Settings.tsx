@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { formatCurrency } from '../lib/utils'
+import { BucketBadge } from '../components/BucketBadge'
 import { Plus, Trash2, Save } from 'lucide-react'
 import type { MarketingChannel, CategoryMapping } from '../lib/types'
 
@@ -226,7 +227,12 @@ export default function Settings({ year }: { year: number }) {
             <button onClick={addBucket} className="btn-primary"><Plus size={16} /> Add</button>
           </div>
           <div className="flex flex-wrap gap-2">
-            {buckets.map(b => <span key={b} className="badge-gray flex items-center gap-1">{b} <button onClick={() => removeBucket(b)} className="text-ink-300 dark:text-ink-600 hover:text-red-500 dark:hover:text-red-400">×</button></span>)}
+            {buckets.map(b => (
+              <span key={b} className="inline-flex items-center gap-1">
+                <BucketBadge bucket={b} />
+                <button onClick={() => removeBucket(b)} className="text-ink-300 dark:text-ink-600 hover:text-red-500 dark:hover:text-red-400">×</button>
+              </span>
+            ))}
           </div>
         </div>
       )}

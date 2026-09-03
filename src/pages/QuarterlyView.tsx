@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getFinancialRollupByQuarter, getAcqRollupByQuarter, getDispoRollupByQuarter, getMarketingCostByChannel, computeFunnelRatios } from '../lib/rollups'
 import { formatCurrency, formatNumber, safeRate } from '../lib/utils'
+import { BucketBadge } from '../components/BucketBadge'
 import type { FinancialRollup, AcqRollup, DispoRollup } from '../lib/types'
 
 const ACQ_METRICS = [
@@ -196,7 +197,7 @@ export default function QuarterlyView({ year }: { year: number }) {
           <tbody>
             {Object.entries(financial?.by_bucket || {}).map(([bucket, amt]) => (
               <tr key={bucket} className="border-b border-ink-100 dark:border-ink-800">
-                <td className="table-cell">{bucket}</td>
+                <td className="table-cell"><BucketBadge bucket={bucket} /></td>
                 <td className="table-cell text-right font-mono">{formatCurrency(amt)}</td>
                 <td className="table-cell text-right font-mono text-ink-500 dark:text-ink-400">
                   {(financial?.expenses || 0) > 0 ? `${((amt / (financial?.expenses || 1)) * 100).toFixed(1)}%` : '—'}

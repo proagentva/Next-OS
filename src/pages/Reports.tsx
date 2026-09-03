@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getReportData, getFinancialRollupByQuarter, getAcqRollupByQuarter, getDispoRollupByQuarter, getMarketingCostByChannel, type ReportData } from '../lib/rollups'
 import { formatCurrency, formatNumber, formatPercent, safeRate } from '../lib/utils'
+import { BucketBadge } from '../components/BucketBadge'
 import { FileText, Download, Loader2 } from 'lucide-react'
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'
@@ -187,8 +188,8 @@ export default function Reports({ year }: { year: number }) {
             <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
               {Object.entries(displayFin.by_bucket || {}).map(([bucket, amt]) => (
                 <div key={bucket} className="bg-ink-50 dark:bg-ink-800 rounded-lg p-3">
-                  <p className="text-xs text-ink-500 dark:text-ink-400">{bucket}</p>
-                  <p className="text-base font-bold font-mono">{formatCurrency(amt)}</p>
+                  <BucketBadge bucket={bucket} />
+                  <p className="text-base font-bold font-mono mt-1">{formatCurrency(amt)}</p>
                 </div>
               ))}
             </div>
