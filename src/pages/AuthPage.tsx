@@ -57,29 +57,29 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-ink-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-ink-50 dark:bg-ink-950 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-ink-900 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-ink-900 dark:bg-ink-700 flex items-center justify-center">
               <span className="text-white font-bold text-lg">N</span>
             </div>
-            <h1 className="text-2xl font-bold text-ink-900">NextOS</h1>
+            <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">NextOS</h1>
           </div>
-          <p className="text-sm text-ink-500">KPI & Expense Operating System</p>
+          <p className="text-sm text-ink-500 dark:text-ink-400">KPI & Expense Operating System</p>
         </div>
 
         <div className="card p-8">
-          <div className="flex gap-1 mb-6 bg-ink-100 rounded-lg p-1">
+          <div className="flex gap-1 mb-6 bg-ink-100 dark:bg-ink-800 rounded-lg p-1">
             <button
               onClick={() => setMode('signin')}
-              className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'signin' ? 'bg-white text-ink-900 shadow-sm' : 'text-ink-500'}`}
+              className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'signin' ? 'bg-white dark:bg-ink-900 text-ink-900 dark:text-ink-50 shadow-sm' : 'text-ink-500 dark:text-ink-400'}`}
             >
               Sign In
             </button>
             <button
               onClick={() => setMode('signup')}
-              className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'signup' ? 'bg-white text-ink-900 shadow-sm' : 'text-ink-500'}`}
+              className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'signup' ? 'bg-white dark:bg-ink-900 text-ink-900 dark:text-ink-50 shadow-sm' : 'text-ink-500 dark:text-ink-400'}`}
             >
               Sign Up
             </button>
@@ -97,9 +97,9 @@ export default function AuthPage() {
           </div>
 
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-px flex-1 bg-ink-200" />
-            <span className="text-xs text-ink-400">or use email</span>
-            <div className="h-px flex-1 bg-ink-200" />
+            <div className="h-px flex-1 bg-ink-200 dark:bg-ink-700" />
+            <span className="text-xs text-ink-400 dark:text-ink-500">or use email</span>
+            <div className="h-px flex-1 bg-ink-200 dark:bg-ink-700" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -152,7 +152,7 @@ export default function AuthPage() {
             </div>
 
             {error && (
-              <div className={`text-sm rounded-lg p-3 ${error.includes('created') || error.includes('verification') ? 'bg-accent-50 text-accent-700' : 'bg-red-50 text-red-600'}`}>
+              <div className={`text-sm rounded-lg p-3 ${error.includes('created') || error.includes('verification') ? 'bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300' : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300'}`}>
                 {error}
               </div>
             )}
@@ -163,7 +163,7 @@ export default function AuthPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-ink-400 mt-6">
+        <p className="text-center text-xs text-ink-400 dark:text-ink-500 mt-6">
           After signing in, you'll create or join your team's organization.
         </p>
       </div>

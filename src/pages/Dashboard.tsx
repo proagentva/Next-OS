@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { getAcqRollupByQuarter, getDispoRollupByQuarter, getFinancialRollupByQuarter, getMonthlyNetProfit, getMarketingCostByChannel } from '../lib/rollups'
 import { formatCurrency, formatNumber, safeRate } from '../lib/utils'
+import { useTheme } from '../contexts/ThemeContext'
 import type { AcqRollup, DispoRollup, FinancialRollup, MarketingRollup } from '../lib/types'
 import { TrendingUp, TrendingDown, DollarSign, Phone, FileCheck, Target } from 'lucide-react'
 
@@ -31,7 +32,7 @@ const DISPO_METRICS = [
   { key: 'deals_locked_up', label: 'Deals Locked Up' },
 ]
 
-const BUCKET_COLORS: Record<string, string> = {
+const BUCKET_COLORS_LIGHT: Record<string, string> = {
   Acquisition: '#10b981',
   Processing: '#3b82f6',
   Commissions: '#f59e0b',
@@ -40,7 +41,38 @@ const BUCKET_COLORS: Record<string, string> = {
   'Non-Operating': '#ec4899',
 }
 
+function getBucketColors(dark: boolean): Record<string, string> {
+  return dark ? { ...BUCKET_COLORS_LIGHT, Misc: '#cbd5e1' } : BUCKET_COLORS_LIGHT
+}
+
+function useChartColors() {
+  const { theme } = useTheme()
+  const dark = theme === 'dark'
+  return {
+    dark,
+    grid: dark ? '#334155' : '#e2e8f0',
+    tick: dark ? '#94a3b8' : '#64748b',
+    tooltipBg: dark ? '#1e293b' : '#ffffff',
+    tooltipBorder: dark ? '#334155' : '#e2e8f0',
+    tooltipText: dark ? '#f8fafc' : '#0f172a',
+    income: dark ? '#34d399' : '#10b981',
+    expenses: dark ? '#f87171' : '#ef4444',
+    net: dark ? '#818cf8' : '#6366f1',
+    areaStroke: dark ? '#34d399' : '#10b981',
+    areaFill: dark ? 'rgba(16,185,129,0.18)' : '#d1fae5',
+    acqBar: dark ? '#34d399' : '#10b981',
+    marketingBar: dark ? '#fbbf24' : '#f59e0b',
+  }
+}
+
 export default function Dashboard({ year }: { year: number }) {
+  const colors = useChartColors()
+  const bucketColors = getBucketColors(colors.dark)
+  const tooltipStyle = {
+    contentStyle: { backgroundColor: colors.tooltipBg, border: `1px solid ${colors.tooltipBorder}`, borderRadius: 8 },
+    labelStyle: { color: colors.tooltipText },
+    itemStyle: { color: colors.tooltipText },
+  }
   const [loading, setLoading] = useState(true)
   const [financial, setFinancial] = useState<Record<string, FinancialRollup>>({})
   const [acq, setAcq] = useState<Record<string, AcqRollup>>({})
@@ -73,7 +105,7 @@ export default function Dashboard({ year }: { year: number }) {
   }, [year])
 
   if (loading) {
-    return <div className="flex items-center justify-center h-full"><div className="text-ink-400">Loading dashboard...</div></div>
+    return <div className="flex items-center justify-center h-full"><div className="text-ink-400 dark:text-ink-500">Loading dashboard...</div></div>
   }
 
   const ytdFin = financial['YTD'] || { income: 0, expenses: 0, net_profit: 0, by_bucket: {} }
@@ -109,8 +141,8 @@ export default function Dashboard({ year }: { year: number }) {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ink-900">Dashboard</h1>
-          <p className="text-sm text-ink-500">Year {year} — YTD overview</p>
+          <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Dashboard</h1>
+          <p className="text-sm text-ink-500 dark:text-ink-400">Year {year} — YTD overview</p>
         </div>
       </div>
 
@@ -126,11 +158,11 @@ export default function Dashboard({ year }: { year: number }) {
 
       {/* Quarterly Bookkeeping Table */}
       <div className="card p-5">
-        <h2 className="text-lg font-semibold text-ink-900 mb-4">Quarterly Bookkeeping</h2>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Quarterly Bookkeeping</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-ink-200">
+              <tr className="border-b border-ink-200 dark:border-ink-800">
                 <th className="table-header text-left px-4 py-2">Quarter</th>
                 <th className="table-header text-right px-4 py-2">Income</th>
                 <th className="table-header text-right px-4 py-2">Expenses</th>
@@ -146,7 +178,7 @@ export default function Dashboard({ year }: { year: number }) {
                 const f = financial[q] || { income: 0, expenses: 0, net_profit: 0, by_bucket: {} }
                 const adminMisc = (f.by_bucket['Admin'] || 0) + (f.by_bucket['Misc'] || 0)
                 return (
-                  <tr key={q} className="border-b border-ink-100 hover:bg-ink-50">
+                  <tr key={q} className="border-b border-ink-100 dark:border-ink-800 hover:bg-ink-50 dark:hover:bg-ink-800">
                     <td className="table-cell font-medium">{q}</td>
                     <td className="table-cell text-right font-mono">{formatCurrency(f.income)}</td>
                     <td className="table-cell text-right font-mono">{formatCurrency(f.expenses)}</td>
@@ -158,7 +190,7 @@ export default function Dashboard({ year }: { year: number }) {
                   </tr>
                 )
               })}
-              <tr className="border-t-2 border-ink-300 bg-ink-50 font-semibold">
+              <tr className="border-t-2 border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-800 font-semibold">
                 <td className="table-cell">YTD</td>
                 <td className="table-cell text-right font-mono">{formatCurrency(ytdFin.income)}</td>
                 <td className="table-cell text-right font-mono">{formatCurrency(ytdFin.expenses)}</td>
@@ -181,38 +213,38 @@ export default function Dashboard({ year }: { year: number }) {
 
       {/* Mini Quarterly Analysis Strip */}
       <div className="card p-5">
-        <h2 className="text-lg font-semibold text-ink-900 mb-4">Quarterly Analysis</h2>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Quarterly Analysis</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-ink-200">
+              <tr className="border-b border-ink-200 dark:border-ink-800">
                 <th className="table-header text-left px-4 py-2">Metric</th>
                 {quarters.map(q => <th key={q} className="table-header text-right px-4 py-2">{q}</th>)}
                 <th className="table-header text-right px-4 py-2">YTD</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-ink-100">
+              <tr className="border-b border-ink-100 dark:border-ink-800">
                 <td className="table-cell font-medium">Income</td>
                 {quarters.map(q => <td key={q} className="table-cell text-right font-mono">{formatCurrency(financial[q]?.income || 0)}</td>)}
                 <td className="table-cell text-right font-mono font-semibold">{formatCurrency(ytdFin.income)}</td>
               </tr>
-              <tr className="border-b border-ink-100">
+              <tr className="border-b border-ink-100 dark:border-ink-800">
                 <td className="table-cell font-medium">Expenses</td>
                 {quarters.map(q => <td key={q} className="table-cell text-right font-mono">{formatCurrency(financial[q]?.expenses || 0)}</td>)}
                 <td className="table-cell text-right font-mono font-semibold">{formatCurrency(ytdFin.expenses)}</td>
               </tr>
-              <tr className="border-b border-ink-100">
+              <tr className="border-b border-ink-100 dark:border-ink-800">
                 <td className="table-cell font-medium">Net Profit</td>
                 {quarters.map(q => <td key={q} className="table-cell text-right font-mono">{formatCurrency(financial[q]?.net_profit || 0)}</td>)}
                 <td className="table-cell text-right font-mono font-semibold">{formatCurrency(ytdFin.net_profit)}</td>
               </tr>
-              <tr className="border-b border-ink-100">
+              <tr className="border-b border-ink-100 dark:border-ink-800">
                 <td className="table-cell font-medium">ACQ Dials</td>
                 {quarters.map(q => <td key={q} className="table-cell text-right font-mono">{formatNumber((acq[q] as any)?.dials || 0)}</td>)}
                 <td className="table-cell text-right font-mono font-semibold">{formatNumber(ytdAcq.dials)}</td>
               </tr>
-              <tr className="border-b border-ink-100">
+              <tr className="border-b border-ink-100 dark:border-ink-800">
                 <td className="table-cell font-medium">ACQ Contracts</td>
                 {quarters.map(q => <td key={q} className="table-cell text-right font-mono">{formatNumber((acq[q] as any)?.contracts || 0)}</td>)}
                 <td className="table-cell text-right font-mono font-semibold">{formatNumber(ytdAcq.contracts)}</td>
@@ -230,57 +262,57 @@ export default function Dashboard({ year }: { year: number }) {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card p-5">
-          <h3 className="text-base font-semibold text-ink-900 mb-4">Quarterly P&L</h3>
+          <h3 className="text-base font-semibold text-ink-900 dark:text-ink-50 mb-4">Quarterly P&L</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={pnlData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="quarter" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-              <Tooltip formatter={(v: number) => formatCurrency(v)} />
-              <Legend />
-              <Bar dataKey="Income" fill="#10b981" />
-              <Bar dataKey="Expenses" fill="#ef4444" />
-              <Bar dataKey="Net" fill="#6366f1" />
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+              <XAxis dataKey="quarter" tick={{ fontSize: 12, fill: colors.tick }} />
+              <YAxis tick={{ fontSize: 12, fill: colors.tick }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+              <Tooltip formatter={(v: number) => formatCurrency(v)} {...tooltipStyle} />
+              <Legend wrapperStyle={{ color: colors.tooltipText }} />
+              <Bar dataKey="Income" fill={colors.income} />
+              <Bar dataKey="Expenses" fill={colors.expenses} />
+              <Bar dataKey="Net" fill={colors.net} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="card p-5">
-          <h3 className="text-base font-semibold text-ink-900 mb-4">Monthly Net Profit Trend</h3>
+          <h3 className="text-base font-semibold text-ink-900 dark:text-ink-50 mb-4">Monthly Net Profit Trend</h3>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={monthlyNet}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-              <Tooltip formatter={(v: number) => formatCurrency(v)} />
-              <Area type="monotone" dataKey="net" stroke="#10b981" fill="#d1fae5" strokeWidth={2} />
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+              <XAxis dataKey="month" tick={{ fontSize: 12, fill: colors.tick }} />
+              <YAxis tick={{ fontSize: 12, fill: colors.tick }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+              <Tooltip formatter={(v: number) => formatCurrency(v)} {...tooltipStyle} />
+              <Area type="monotone" dataKey="net" stroke={colors.areaStroke} fill={colors.areaFill} strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
         <div className="card p-5">
-          <h3 className="text-base font-semibold text-ink-900 mb-4">Expense Breakdown by Bucket</h3>
+          <h3 className="text-base font-semibold text-ink-900 dark:text-ink-50 mb-4">Expense Breakdown by Bucket</h3>
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
               <Pie data={expenseBreakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={(e: any) => e.name}>
                 {expenseBreakdown.map((entry, i) => (
-                  <Cell key={i} fill={BUCKET_COLORS[entry.name] || '#94a3b8'} />
+                  <Cell key={i} fill={bucketColors[entry.name] || (colors.dark ? '#cbd5e1' : '#94a3b8')} />
                 ))}
               </Pie>
-              <Tooltip formatter={(v: number) => formatCurrency(v)} />
+              <Tooltip formatter={(v: number) => formatCurrency(v)} {...tooltipStyle} />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
         <div className="card p-5">
-          <h3 className="text-base font-semibold text-ink-900 mb-4">ACQ Funnel (YTD)</h3>
+          <h3 className="text-base font-semibold text-ink-900 dark:text-ink-50 mb-4">ACQ Funnel (YTD)</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={acqFunnelData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis type="number" tick={{ fontSize: 12 }} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} width={100} />
-              <Tooltip />
-              <Bar dataKey="value" fill="#10b981" radius={[0, 4, 4, 0]} />
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+              <XAxis type="number" tick={{ fontSize: 12, fill: colors.tick }} />
+              <YAxis dataKey="name" type="category" tick={{ fontSize: 11, fill: colors.tick }} width={100} />
+              <Tooltip {...tooltipStyle} />
+              <Bar dataKey="value" fill={colors.acqBar} radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -289,14 +321,14 @@ export default function Dashboard({ year }: { year: number }) {
       {/* Marketing Cost by Quarter */}
       {marketingData.length > 0 && (
         <div className="card p-5">
-          <h3 className="text-base font-semibold text-ink-900 mb-4">Acquisition Cost by Channel (YTD)</h3>
+          <h3 className="text-base font-semibold text-ink-900 dark:text-ink-50 mb-4">Acquisition Cost by Channel (YTD)</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={marketingData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-15} textAnchor="end" height={70} />
-              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-              <Tooltip formatter={(v: number) => formatCurrency(v)} />
-              <Bar dataKey="cost" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: colors.tick }} angle={-15} textAnchor="end" height={70} />
+              <YAxis tick={{ fontSize: 12, fill: colors.tick }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+              <Tooltip formatter={(v: number) => formatCurrency(v)} {...tooltipStyle} />
+              <Bar dataKey="cost" fill={colors.marketingBar} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -307,9 +339,9 @@ export default function Dashboard({ year }: { year: number }) {
 
 function StatCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color: string }) {
   const colorMap: Record<string, string> = {
-    accent: 'text-accent-600 bg-accent-50',
-    red: 'text-red-600 bg-red-50',
-    ink: 'text-ink-600 bg-ink-100',
+    accent: 'text-accent-600 dark:text-accent-400 bg-accent-50 dark:bg-accent-900/30',
+    red: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30',
+    ink: 'text-ink-600 dark:text-ink-300 bg-ink-100 dark:bg-ink-800',
   }
   return (
     <div className="stat-card">
@@ -330,11 +362,11 @@ function FunnelTable({ title, metrics, data, quarters }: { title: string; metric
   const ytd = data['YTD'] || {}
   return (
     <div className="card p-5">
-      <h2 className="text-lg font-semibold text-ink-900 mb-4">{title}</h2>
+      <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">{title}</h2>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-ink-200">
+            <tr className="border-b border-ink-200 dark:border-ink-800">
               <th className="table-header text-left px-3 py-2">Metric</th>
               {quarters.map(q => <th key={q} className="table-header text-right px-3 py-2">{q}</th>)}
               <th className="table-header text-right px-3 py-2">YTD</th>
@@ -342,7 +374,7 @@ function FunnelTable({ title, metrics, data, quarters }: { title: string; metric
           </thead>
           <tbody>
             {metrics.map(m => (
-              <tr key={m.key} className="border-b border-ink-100 hover:bg-ink-50">
+              <tr key={m.key} className="border-b border-ink-100 dark:border-ink-800 hover:bg-ink-50 dark:hover:bg-ink-800">
                 <td className="table-cell font-medium">{m.label}</td>
                 {quarters.map(q => <td key={q} className="table-cell text-right font-mono">{formatNumber((data[q] as any)?.[m.key] || 0)}</td>)}
                 <td className="table-cell text-right font-mono font-semibold">{formatNumber((ytd as any)[m.key] || 0)}</td>

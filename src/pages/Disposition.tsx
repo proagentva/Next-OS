@@ -57,8 +57,8 @@ export default function Disposition({ year }: { year: number }) {
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ink-900">Disposition KPIs</h1>
-          <p className="text-sm text-ink-500">{total} records — {year}</p>
+          <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Disposition KPIs</h1>
+          <p className="text-sm text-ink-500 dark:text-ink-400">{total} records — {year}</p>
         </div>
         <ImportExportToolbar
           schema="dispo"
@@ -75,7 +75,7 @@ export default function Disposition({ year }: { year: number }) {
           <div>
             <label className="label">Employee</label>
             <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 dark:text-ink-500" />
               <input type="text" value={filters.employee} onChange={e => { setFilters(f => ({ ...f, employee: e.target.value })); setPage(0) }} className="input pl-9" placeholder="Search employee..." />
             </div>
           </div>
@@ -99,13 +99,13 @@ export default function Disposition({ year }: { year: number }) {
 
       <div className="card overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-ink-400">Loading...</div>
+          <div className="p-8 text-center text-ink-400 dark:text-ink-500">Loading...</div>
         ) : rows.length === 0 ? (
-          <div className="p-8 text-center text-ink-400">No records found. Import a CSV to get started.</div>
+          <div className="p-8 text-center text-ink-400 dark:text-ink-500">No records found. Import a CSV to get started.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-ink-50">
+              <thead className="bg-ink-50 dark:bg-ink-800">
                 <tr>
                   <th className="table-header text-left px-3 py-2">Date</th>
                   <th className="table-header text-left px-3 py-2">Employee</th>
@@ -124,7 +124,7 @@ export default function Disposition({ year }: { year: number }) {
               </thead>
               <tbody>
                 {rows.map(r => (
-                  <tr key={r.id} className="border-t border-ink-100 hover:bg-ink-50">
+                  <tr key={r.id} className="border-t border-ink-100 dark:border-ink-800 hover:bg-ink-50 dark:hover:bg-ink-800">
                     <td className="table-cell whitespace-nowrap">{formatDate(r.date)}</td>
                     <td className="table-cell">{r.employee}</td>
                     <td className="table-cell"><span className="badge-gray">{r.role}</span></td>
@@ -146,8 +146,8 @@ export default function Disposition({ year }: { year: number }) {
         )}
 
         {total > PAGE_SIZE && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-ink-200">
-            <span className="text-sm text-ink-500">{page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total}</span>
+          <div className="flex items-center justify-between px-4 py-3 border-t border-ink-200 dark:border-ink-800">
+            <span className="text-sm text-ink-500 dark:text-ink-400">{page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total}</span>
             <div className="flex gap-2">
               <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="btn-ghost p-2"><ChevronLeft size={16} /></button>
               <button onClick={() => setPage(p => p + 1)} disabled={(page + 1) * PAGE_SIZE >= total} className="btn-ghost p-2"><ChevronRight size={16} /></button>

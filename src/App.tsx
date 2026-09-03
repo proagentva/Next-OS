@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { OrganizationProvider, useOrganization } from './contexts/OrganizationContext'
 import { Sidebar, Layout } from './components/Sidebar'
@@ -34,8 +35,8 @@ function AppContent() {
 
   if (authLoading || (user && orgLoading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-ink-50">
-        <div className="text-ink-400">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-ink-50 dark:bg-ink-950">
+        <div className="text-ink-400 dark:text-ink-500">Loading...</div>
       </div>
     )
   }
@@ -72,10 +73,12 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <OrganizationProvider>
-        <AppContent />
-      </OrganizationProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <OrganizationProvider>
+          <AppContent />
+        </OrganizationProvider>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

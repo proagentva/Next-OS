@@ -59,7 +59,7 @@ export default function QuarterlyView({ year }: { year: number }) {
     })()
   }, [year, quarter])
 
-  if (loading) return <div className="p-6 text-ink-400">Loading Q{quarter}...</div>
+  if (loading) return <div className="p-6 text-ink-400 dark:text-ink-500">Loading Q{quarter}...</div>
 
   const ratios = acq ? computeFunnelRatios(acq) : null
   const totalMarketing = marketing.reduce((s, m) => s + m.cost, 0)
@@ -70,15 +70,15 @@ export default function QuarterlyView({ year }: { year: number }) {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ink-900">Quarterly View</h1>
-          <p className="text-sm text-ink-500">{year} — Read-only consolidated report</p>
+          <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Quarterly View</h1>
+          <p className="text-sm text-ink-500 dark:text-ink-400">{year} — Read-only consolidated report</p>
         </div>
-        <div className="flex gap-1 bg-ink-100 rounded-lg p-1">
+        <div className="flex gap-1 bg-ink-100 dark:bg-ink-800 rounded-lg p-1">
           {[1, 2, 3, 4].map(q => (
             <button
               key={q}
               onClick={() => setQuarter(q)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${quarter === q ? 'bg-white text-ink-900 shadow-sm' : 'text-ink-500'}`}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${quarter === q ? 'bg-white dark:bg-ink-900 text-ink-900 dark:text-ink-50 shadow-sm' : 'text-ink-500 dark:text-ink-400'}`}
             >
               Q{q}
             </button>
@@ -112,13 +112,13 @@ export default function QuarterlyView({ year }: { year: number }) {
 
       {/* Section A — Marketing by Channel */}
       <div className="card p-5">
-        <h2 className="text-lg font-semibold text-ink-900 mb-4">Section A — Marketing by Channel</h2>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Section A — Marketing by Channel</h2>
         {marketing.length === 0 ? (
-          <p className="text-sm text-ink-400">No Acquisition-bucket expenses for Q{quarter}.</p>
+          <p className="text-sm text-ink-400 dark:text-ink-500">No Acquisition-bucket expenses for Q{quarter}.</p>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-ink-200">
+              <tr className="border-b border-ink-200 dark:border-ink-800">
                 <th className="table-header text-left px-4 py-2">Channel</th>
                 <th className="table-header text-right px-4 py-2">Cost</th>
                 <th className="table-header text-right px-4 py-2">% of Marketing</th>
@@ -127,11 +127,11 @@ export default function QuarterlyView({ year }: { year: number }) {
             </thead>
             <tbody>
               {marketing.map(m => (
-                <tr key={m.channel} className="border-b border-ink-100">
+                <tr key={m.channel} className="border-b border-ink-100 dark:border-ink-800">
                   <td className="table-cell">{m.channel}</td>
                   <td className="table-cell text-right font-mono">{formatCurrency(m.cost)}</td>
-                  <td className="table-cell text-right font-mono text-ink-500">{totalMarketing > 0 ? `${((m.cost / totalMarketing) * 100).toFixed(1)}%` : '—'}</td>
-                  {dealsClosed > 0 && <td className="table-cell text-right font-mono text-ink-500">{dealsClosed > 0 ? formatCurrency(m.cost / dealsClosed) : '—'}</td>}
+                  <td className="table-cell text-right font-mono text-ink-500 dark:text-ink-400">{totalMarketing > 0 ? `${((m.cost / totalMarketing) * 100).toFixed(1)}%` : '—'}</td>
+                  {dealsClosed > 0 && <td className="table-cell text-right font-mono text-ink-500 dark:text-ink-400">{dealsClosed > 0 ? formatCurrency(m.cost / dealsClosed) : '—'}</td>}
                 </tr>
               ))}
             </tbody>
@@ -141,28 +141,28 @@ export default function QuarterlyView({ year }: { year: number }) {
 
       {/* Section B — ACQ KPIs */}
       <div className="card p-5">
-        <h2 className="text-lg font-semibold text-ink-900 mb-4">Section B — Acquisitions KPI Activity</h2>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Section B — Acquisitions KPI Activity</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
           {ACQ_METRICS.map(m => (
-            <div key={m.key} className="bg-ink-50 rounded-lg p-3">
-              <p className="text-xs text-ink-500">{m.label}</p>
-              <p className="text-lg font-bold font-mono text-ink-900">{formatNumber((acq as any)?.[m.key] || 0)}</p>
+            <div key={m.key} className="bg-ink-50 dark:bg-ink-800 rounded-lg p-3">
+              <p className="text-xs text-ink-500 dark:text-ink-400">{m.label}</p>
+              <p className="text-lg font-bold font-mono text-ink-900 dark:text-ink-50">{formatNumber((acq as any)?.[m.key] || 0)}</p>
             </div>
           ))}
         </div>
         {ratios && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="bg-accent-50 rounded-lg p-3">
-              <p className="text-xs text-accent-700">Conversation Rate (Conv/Dials)</p>
-              <p className="text-lg font-bold font-mono text-accent-800">{safeRate(acq?.conversations || 0, acq?.dials || 0)}</p>
+            <div className="bg-accent-50 dark:bg-accent-900/20 rounded-lg p-3">
+              <p className="text-xs text-accent-700 dark:text-accent-400">Conversation Rate (Conv/Dials)</p>
+              <p className="text-lg font-bold font-mono text-accent-800 dark:text-accent-300">{safeRate(acq?.conversations || 0, acq?.dials || 0)}</p>
             </div>
-            <div className="bg-accent-50 rounded-lg p-3">
-              <p className="text-xs text-accent-700">Pass-Off Rate (PassOffs/Conv)</p>
-              <p className="text-lg font-bold font-mono text-accent-800">{safeRate(acq?.pass_offs || 0, acq?.conversations || 0)}</p>
+            <div className="bg-accent-50 dark:bg-accent-900/20 rounded-lg p-3">
+              <p className="text-xs text-accent-700 dark:text-accent-400">Pass-Off Rate (PassOffs/Conv)</p>
+              <p className="text-lg font-bold font-mono text-accent-800 dark:text-accent-300">{safeRate(acq?.pass_offs || 0, acq?.conversations || 0)}</p>
             </div>
-            <div className="bg-accent-50 rounded-lg p-3">
-              <p className="text-xs text-accent-700">Offer→Contract Rate</p>
-              <p className="text-lg font-bold font-mono text-accent-800">{safeRate(acq?.contracts || 0, acq?.offers || 0)}</p>
+            <div className="bg-accent-50 dark:bg-accent-900/20 rounded-lg p-3">
+              <p className="text-xs text-accent-700 dark:text-accent-400">Offer→Contract Rate</p>
+              <p className="text-lg font-bold font-mono text-accent-800 dark:text-accent-300">{safeRate(acq?.contracts || 0, acq?.offers || 0)}</p>
             </div>
           </div>
         )}
@@ -170,12 +170,12 @@ export default function QuarterlyView({ year }: { year: number }) {
 
       {/* Section B2 — Dispo KPIs */}
       <div className="card p-5">
-        <h2 className="text-lg font-semibold text-ink-900 mb-4">Section B2 — Dispositions KPI Activity</h2>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Section B2 — Dispositions KPI Activity</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {DISPO_METRICS.map(m => (
-            <div key={m.key} className="bg-ink-50 rounded-lg p-3">
-              <p className="text-xs text-ink-500">{m.label}</p>
-              <p className="text-lg font-bold font-mono text-ink-900">{formatNumber((dispo as any)?.[m.key] || 0)}</p>
+            <div key={m.key} className="bg-ink-50 dark:bg-ink-800 rounded-lg p-3">
+              <p className="text-xs text-ink-500 dark:text-ink-400">{m.label}</p>
+              <p className="text-lg font-bold font-mono text-ink-900 dark:text-ink-50">{formatNumber((dispo as any)?.[m.key] || 0)}</p>
             </div>
           ))}
         </div>
@@ -183,10 +183,10 @@ export default function QuarterlyView({ year }: { year: number }) {
 
       {/* Section C — Expenses by Bucket */}
       <div className="card p-5">
-        <h2 className="text-lg font-semibold text-ink-900 mb-4">Section C — Expenses by Bucket</h2>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Section C — Expenses by Bucket</h2>
         <table className="w-full">
           <thead>
-            <tr className="border-b border-ink-200">
+            <tr className="border-b border-ink-200 dark:border-ink-800">
               <th className="table-header text-left px-4 py-2">Bucket</th>
               <th className="table-header text-right px-4 py-2">Amount</th>
               <th className="table-header text-right px-4 py-2">% of Total</th>
@@ -195,18 +195,18 @@ export default function QuarterlyView({ year }: { year: number }) {
           </thead>
           <tbody>
             {Object.entries(financial?.by_bucket || {}).map(([bucket, amt]) => (
-              <tr key={bucket} className="border-b border-ink-100">
+              <tr key={bucket} className="border-b border-ink-100 dark:border-ink-800">
                 <td className="table-cell">{bucket}</td>
                 <td className="table-cell text-right font-mono">{formatCurrency(amt)}</td>
-                <td className="table-cell text-right font-mono text-ink-500">
+                <td className="table-cell text-right font-mono text-ink-500 dark:text-ink-400">
                   {(financial?.expenses || 0) > 0 ? `${((amt / (financial?.expenses || 1)) * 100).toFixed(1)}%` : '—'}
                 </td>
-                {dealsClosed > 0 && <td className="table-cell text-right font-mono text-ink-500">{formatCurrency(amt / dealsClosed)}</td>}
+                {dealsClosed > 0 && <td className="table-cell text-right font-mono text-ink-500 dark:text-ink-400">{formatCurrency(amt / dealsClosed)}</td>}
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-ink-300 bg-ink-50 font-semibold">
+            <tr className="border-t-2 border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-800 font-semibold">
               <td className="table-cell">Total Expenses</td>
               <td className="table-cell text-right font-mono">{formatCurrency(financial?.expenses || 0)}</td>
               <td className="table-cell text-right font-mono">100%</td>

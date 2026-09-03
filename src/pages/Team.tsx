@@ -127,7 +127,7 @@ export default function Team() {
   if (!isAdmin) {
     return (
       <div className="p-6">
-        <div className="card p-8 text-center text-ink-500">Only owners and admins can view the Team page.</div>
+        <div className="card p-8 text-center text-ink-500 dark:text-ink-400">Only owners and admins can view the Team page.</div>
       </div>
     )
   }
@@ -135,12 +135,12 @@ export default function Team() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-ink-900">Team</h1>
-        <p className="text-sm text-ink-500">{currentOrganization?.name} — {members.length} member{members.length === 1 ? '' : 's'}</p>
+        <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Team</h1>
+        <p className="text-sm text-ink-500 dark:text-ink-400">{currentOrganization?.name} — {members.length} member{members.length === 1 ? '' : 's'}</p>
       </div>
 
       <div className="card p-4">
-        <h3 className="text-sm font-semibold text-ink-700 mb-3">Invite Teammate</h3>
+        <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">Invite Teammate</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <input
             type="email"
@@ -186,21 +186,21 @@ export default function Team() {
 
       {invites.length > 0 && (
         <div className="card overflow-hidden">
-          <div className="px-4 py-3 border-b border-ink-200">
-            <h3 className="text-sm font-semibold text-ink-700">Pending Invites</h3>
+          <div className="px-4 py-3 border-b border-ink-200 dark:border-ink-800">
+            <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300">Pending Invites</h3>
           </div>
-          <div className="divide-y divide-ink-100">
+          <div className="divide-y divide-ink-100 dark:divide-ink-800">
             {invites.map(inv => (
               <div key={inv.id} className="px-4 py-3 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-medium text-ink-900">{inv.email}</p>
-                  <p className="text-xs text-ink-400">{inv.invited_role}{inv.invited_kpi_role ? ` — ${inv.invited_kpi_role}` : ''}</p>
+                  <p className="text-sm font-medium text-ink-900 dark:text-ink-50">{inv.email}</p>
+                  <p className="text-xs text-ink-400 dark:text-ink-500">{inv.invited_role}{inv.invited_kpi_role ? ` — ${inv.invited_kpi_role}` : ''}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => copyInviteLink(inv)} className="btn-ghost text-xs">
                     <Copy size={14} /> {copiedId === inv.id ? 'Copied!' : 'Copy link'}
                   </button>
-                  <button onClick={() => revokeInvite(inv.id)} className="p-1.5 rounded text-ink-300 hover:text-red-500 hover:bg-red-50">
+                  <button onClick={() => revokeInvite(inv.id)} className="p-1.5 rounded text-ink-300 dark:text-ink-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30">
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -212,11 +212,11 @@ export default function Team() {
 
       <div className="card overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-ink-400">Loading...</div>
+          <div className="p-8 text-center text-ink-400 dark:text-ink-500">Loading...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-ink-50">
+              <thead className="bg-ink-50 dark:bg-ink-800">
                 <tr>
                   <th className="table-header text-left px-3 py-2">Name</th>
                   <th className="table-header text-left px-3 py-2">Role</th>
@@ -227,10 +227,10 @@ export default function Team() {
               </thead>
               <tbody>
                 {members.map(m => (
-                  <tr key={m.id} className="border-t border-ink-100">
+                  <tr key={m.id} className="border-t border-ink-100 dark:border-ink-800">
                     <td className="table-cell">
                       <p className="font-medium">{m.profile?.display_name || 'Unknown'}</p>
-                      <p className="text-xs text-ink-400">{m.profile?.email}</p>
+                      <p className="text-xs text-ink-400 dark:text-ink-500">{m.profile?.email}</p>
                     </td>
                     <td className="table-cell">
                       {m.role === 'owner' ? (
@@ -253,7 +253,7 @@ export default function Team() {
                     </td>
                     <td className="table-cell">
                       {m.role === 'owner' ? (
-                        <span className="text-xs text-ink-400">All tabs (owner)</span>
+                        <span className="text-xs text-ink-400 dark:text-ink-500">All tabs (owner)</span>
                       ) : (
                         <div className="flex flex-wrap gap-1 max-w-xs">
                           {ORG_TAB_IDS.map(tab => (
@@ -270,7 +270,7 @@ export default function Team() {
                     </td>
                     <td className="table-cell text-right">
                       {m.role !== 'owner' && m.user_id !== user?.id && (
-                        <button onClick={() => removeMember(m.id)} className="p-1.5 rounded text-ink-300 hover:text-red-500 hover:bg-red-50">
+                        <button onClick={() => removeMember(m.id)} className="p-1.5 rounded text-ink-300 dark:text-ink-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30">
                           <Trash2 size={14} />
                         </button>
                       )}

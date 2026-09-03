@@ -77,8 +77,8 @@ export default function Reports({ year }: { year: number }) {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between no-print">
         <div>
-          <h1 className="text-2xl font-bold text-ink-900">Reports</h1>
-          <p className="text-sm text-ink-500">AI-generated analytical reports</p>
+          <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Reports</h1>
+          <p className="text-sm text-ink-500 dark:text-ink-400">AI-generated analytical reports</p>
         </div>
         <div className="flex items-center gap-3">
           <select value={period} onChange={e => setPeriod(e.target.value as PeriodType)} className="input w-32">
@@ -122,7 +122,7 @@ export default function Reports({ year }: { year: number }) {
             </div>
             <div className="card p-4">
               <p className="stat-label">Net Profit</p>
-              <p className="stat-value" style={{ color: displayFin.net_profit >= 0 ? '#059669' : '#dc2626' }}>
+              <p className={`stat-value ${displayFin.net_profit >= 0 ? 'text-accent-600 dark:text-accent-400' : 'text-red-600 dark:text-red-400'}`}>
                 {formatCurrency(displayFin.net_profit)}
               </p>
             </div>
@@ -135,11 +135,11 @@ export default function Reports({ year }: { year: number }) {
           {/* Comparison Table */}
           {period === 'quarterly' && comparisonRows.length > 0 && (
             <div className="card p-5">
-              <h2 className="text-lg font-semibold text-ink-900 mb-4">Quarterly Comparison</h2>
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Quarterly Comparison</h2>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-ink-200">
+                    <tr className="border-b border-ink-200 dark:border-ink-800">
                       <th className="table-header text-left px-3 py-2">Metric</th>
                       {comparisonRows.map(c => <th key={c.quarter} className="table-header text-right px-3 py-2">{c.quarter}</th>)}
                     </tr>
@@ -156,7 +156,7 @@ export default function Reports({ year }: { year: number }) {
                       const values = comparisonRows.map(c => (c as any)[row.key])
                       const current = values[selectedQuarter - 1]
                       return (
-                        <tr key={row.key} className="border-b border-ink-100">
+                        <tr key={row.key} className="border-b border-ink-100 dark:border-ink-800">
                           <td className="table-cell font-medium">{row.label}</td>
                           {comparisonRows.map((c, i) => {
                             const val = (c as any)[row.key]
@@ -165,7 +165,7 @@ export default function Reports({ year }: { year: number }) {
                               <td key={i} className="table-cell text-right font-mono">
                                 {row.fmt(val)}
                                 {pct !== null && (
-                                  <span className={`ml-2 text-xs ${pct > 0 ? 'text-accent-600' : pct < 0 ? 'text-red-500' : 'text-ink-400'}`}>
+                                  <span className={`ml-2 text-xs ${pct > 0 ? 'text-accent-600 dark:text-accent-400' : pct < 0 ? 'text-red-500 dark:text-red-400' : 'text-ink-400 dark:text-ink-500'}`}>
                                     {formatPercent(pct)}
                                   </span>
                                 )}
@@ -183,11 +183,11 @@ export default function Reports({ year }: { year: number }) {
 
           {/* Expense by Bucket */}
           <div className="card p-5">
-            <h2 className="text-lg font-semibold text-ink-900 mb-4">Expenses by Bucket</h2>
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Expenses by Bucket</h2>
             <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
               {Object.entries(displayFin.by_bucket || {}).map(([bucket, amt]) => (
-                <div key={bucket} className="bg-ink-50 rounded-lg p-3">
-                  <p className="text-xs text-ink-500">{bucket}</p>
+                <div key={bucket} className="bg-ink-50 dark:bg-ink-800 rounded-lg p-3">
+                  <p className="text-xs text-ink-500 dark:text-ink-400">{bucket}</p>
                   <p className="text-base font-bold font-mono">{formatCurrency(amt)}</p>
                 </div>
               ))}
@@ -197,27 +197,27 @@ export default function Reports({ year }: { year: number }) {
           {/* ACQ + Dispo Funnel */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="card p-5">
-              <h2 className="text-lg font-semibold text-ink-900 mb-4">ACQ Funnel</h2>
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">ACQ Funnel</h2>
               <div className="space-y-2">
                 {['dials', 'conversations', 'leads_pushed', 'pass_offs', 'appts_set', 'offers', 'contracts', 'closed'].map(k => (
-                  <div key={k} className="flex justify-between items-center py-1 border-b border-ink-100">
-                    <span className="text-sm text-ink-600 capitalize">{k.replace(/_/g, ' ')}</span>
+                  <div key={k} className="flex justify-between items-center py-1 border-b border-ink-100 dark:border-ink-800">
+                    <span className="text-sm text-ink-600 dark:text-ink-300 capitalize">{k.replace(/_/g, ' ')}</span>
                     <span className="font-mono font-medium">{formatNumber((acqData as any)?.[k] || 0)}</span>
                   </div>
                 ))}
               </div>
               <div className="mt-3 space-y-1">
-                <div className="flex justify-between text-sm"><span className="text-ink-500">Conv Rate</span><span className="font-mono">{safeRate((acqData as any)?.conversations || 0, (acqData as any)?.dials || 0)}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-ink-500">Pass-Off Rate</span><span className="font-mono">{safeRate((acqData as any)?.pass_offs || 0, (acqData as any)?.conversations || 0)}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-ink-500">Offer→Contract</span><span className="font-mono">{safeRate((acqData as any)?.contracts || 0, (acqData as any)?.offers || 0)}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-ink-500 dark:text-ink-400">Conv Rate</span><span className="font-mono">{safeRate((acqData as any)?.conversations || 0, (acqData as any)?.dials || 0)}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-ink-500 dark:text-ink-400">Pass-Off Rate</span><span className="font-mono">{safeRate((acqData as any)?.pass_offs || 0, (acqData as any)?.conversations || 0)}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-ink-500 dark:text-ink-400">Offer→Contract</span><span className="font-mono">{safeRate((acqData as any)?.contracts || 0, (acqData as any)?.offers || 0)}</span></div>
               </div>
             </div>
             <div className="card p-5">
-              <h2 className="text-lg font-semibold text-ink-900 mb-4">Dispo Funnel</h2>
+              <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Dispo Funnel</h2>
               <div className="space-y-2">
                 {['total_dials', 'calls_connected', 'follow_ups', 'deals_pitched', 'offers_made', 'deals_locked_up'].map(k => (
-                  <div key={k} className="flex justify-between items-center py-1 border-b border-ink-100">
-                    <span className="text-sm text-ink-600 capitalize">{k.replace(/_/g, ' ')}</span>
+                  <div key={k} className="flex justify-between items-center py-1 border-b border-ink-100 dark:border-ink-800">
+                    <span className="text-sm text-ink-600 dark:text-ink-300 capitalize">{k.replace(/_/g, ' ')}</span>
                     <span className="font-mono font-medium">{formatNumber((dispoData as any)?.[k] || 0)}</span>
                   </div>
                 ))}
@@ -227,16 +227,16 @@ export default function Reports({ year }: { year: number }) {
 
           {/* AI Narrative */}
           <div className="card p-6">
-            <h2 className="text-lg font-semibold text-ink-900 mb-4">AI Analysis & Recommendations</h2>
+            <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">AI Analysis & Recommendations</h2>
             {narrativeError ? (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-600">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-sm text-red-600 dark:text-red-300">
                 {narrativeError}
-                <p className="mt-2 text-xs text-ink-500">The AI narrative requires a Gemini API key configured as an edge function secret. The data tables above are fully functional without it.</p>
+                <p className="mt-2 text-xs text-ink-500 dark:text-ink-400">The AI narrative requires a Gemini API key configured as an edge function secret. The data tables above are fully functional without it.</p>
               </div>
             ) : narrative ? (
-              <div className="prose prose-sm max-w-none text-ink-700 whitespace-pre-wrap">{narrative}</div>
+              <div className="prose prose-sm max-w-none text-ink-700 dark:text-ink-300 whitespace-pre-wrap">{narrative}</div>
             ) : (
-              <p className="text-sm text-ink-400">Click "Generate Report" to produce the AI analysis.</p>
+              <p className="text-sm text-ink-400 dark:text-ink-500">Click "Generate Report" to produce the AI analysis.</p>
             )}
           </div>
         </div>
@@ -244,8 +244,8 @@ export default function Reports({ year }: { year: number }) {
 
       {!report && !loading && (
         <div className="card p-12 text-center">
-          <FileText size={48} className="mx-auto mb-3 text-ink-300" />
-          <p className="text-ink-400">Select a period and click "Generate Report" to produce an analytical report with AI commentary.</p>
+          <FileText size={48} className="mx-auto mb-3 text-ink-300 dark:text-ink-600" />
+          <p className="text-ink-400 dark:text-ink-500">Select a period and click "Generate Report" to produce an analytical report with AI commentary.</p>
         </div>
       )}
     </div>

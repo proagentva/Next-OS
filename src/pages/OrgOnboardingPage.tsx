@@ -45,29 +45,29 @@ export default function OrgOnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-ink-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-ink-50 dark:bg-ink-950 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-ink-900 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-ink-900 dark:bg-ink-700 flex items-center justify-center">
               <span className="text-white font-bold text-lg">N</span>
             </div>
-            <h1 className="text-2xl font-bold text-ink-900">NextOS</h1>
+            <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">NextOS</h1>
           </div>
-          <p className="text-sm text-ink-500">Set up your workspace</p>
+          <p className="text-sm text-ink-500 dark:text-ink-400">Set up your workspace</p>
         </div>
 
         <div className="card p-8">
-          <div className="flex gap-1 mb-6 bg-ink-100 rounded-lg p-1">
+          <div className="flex gap-1 mb-6 bg-ink-100 dark:bg-ink-800 rounded-lg p-1">
             <button
               onClick={() => setMode('create')}
-              className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'create' ? 'bg-white text-ink-900 shadow-sm' : 'text-ink-500'}`}
+              className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'create' ? 'bg-white dark:bg-ink-900 text-ink-900 dark:text-ink-50 shadow-sm' : 'text-ink-500 dark:text-ink-400'}`}
             >
               Create Organization
             </button>
             <button
               onClick={() => setMode('join')}
-              className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'join' ? 'bg-white text-ink-900 shadow-sm' : 'text-ink-500'}`}
+              className={`flex-1 py-2 rounded-md text-sm font-medium transition-all ${mode === 'join' ? 'bg-white dark:bg-ink-900 text-ink-900 dark:text-ink-50 shadow-sm' : 'text-ink-500 dark:text-ink-400'}`}
             >
               Join Organization
             </button>
@@ -97,7 +97,7 @@ export default function OrgOnboardingPage() {
                     placeholder="e.g. proagentva"
                     required
                   />
-                  <p className="text-xs text-ink-400 mt-1">Teammates use this to join. Lowercase letters, numbers, hyphens only.</p>
+                  <p className="text-xs text-ink-400 dark:text-ink-500 mt-1">Teammates use this to join. Lowercase letters, numbers, hyphens only.</p>
                 </div>
                 <div>
                   <label className="label">Timezone</label>
@@ -121,7 +121,7 @@ export default function OrgOnboardingPage() {
             )}
 
             {error && (
-              <div className="text-sm rounded-lg p-3 bg-red-50 text-red-600">
+              <div className="text-sm rounded-lg p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300">
                 {error}
               </div>
             )}
@@ -132,9 +132,9 @@ export default function OrgOnboardingPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-ink-400 mt-6">
+        <p className="text-center text-xs text-ink-400 dark:text-ink-500 mt-6">
           You'll only see data for organizations you're a member of.{' '}
-          <button onClick={signOut} className="underline hover:text-ink-600">Sign out</button>
+          <button onClick={signOut} className="underline hover:text-ink-600 dark:hover:text-ink-300">Sign out</button>
         </p>
       </div>
     </div>

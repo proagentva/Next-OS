@@ -25,16 +25,16 @@ export default function Profile() {
 
   return (
     <div className="p-6 max-w-2xl">
-      <h1 className="text-2xl font-bold text-ink-900 mb-6">Profile</h1>
+      <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50 mb-6">Profile</h1>
 
       <div className="card p-6 space-y-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-ink-900 text-white flex items-center justify-center text-xl font-medium">
+          <div className="w-16 h-16 rounded-full bg-ink-900 dark:bg-ink-700 text-white flex items-center justify-center text-xl font-medium">
             {initials}
           </div>
           <div>
-            <p className="text-lg font-semibold text-ink-900">{profile?.display_name || 'User'}</p>
-            <p className="text-sm text-ink-500">{profile?.email}</p>
+            <p className="text-lg font-semibold text-ink-900 dark:text-ink-50">{profile?.display_name || 'User'}</p>
+            <p className="text-sm text-ink-500 dark:text-ink-400">{profile?.email}</p>
           </div>
         </div>
 
@@ -45,16 +45,16 @@ export default function Profile() {
           </div>
           <div>
             <label className="label">Email</label>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-ink-50 border border-ink-200">
-              <Mail size={16} className="text-ink-400" />
-              <span className="text-sm text-ink-500">{profile?.email}</span>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-ink-50 dark:bg-ink-800 border border-ink-200 dark:border-ink-800">
+              <Mail size={16} className="text-ink-400 dark:text-ink-500" />
+              <span className="text-sm text-ink-500 dark:text-ink-400">{profile?.email}</span>
             </div>
           </div>
           <div>
             <label className="label">Role</label>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-ink-50 border border-ink-200">
-              <Shield size={16} className="text-ink-400" />
-              <span className="text-sm text-ink-500">{profile?.role || 'Member'}</span>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-ink-50 dark:bg-ink-800 border border-ink-200 dark:border-ink-800">
+              <Shield size={16} className="text-ink-400 dark:text-ink-500" />
+              <span className="text-sm text-ink-500 dark:text-ink-400">{profile?.role || 'Member'}</span>
             </div>
           </div>
         </div>
@@ -63,12 +63,12 @@ export default function Profile() {
           <button onClick={handleSave} disabled={saving} className="btn-primary">
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
-          {saved && <span className="text-sm text-accent-600">Saved!</span>}
+          {saved && <span className="text-sm text-accent-600 dark:text-accent-400">Saved!</span>}
         </div>
       </div>
 
       <div className="mt-6">
-        <button onClick={signOut} className="btn-secondary text-red-600 hover:bg-red-50">
+        <button onClick={signOut} className="btn-secondary text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30">
           <LogOut size={16} /> Sign Out
         </button>
       </div>

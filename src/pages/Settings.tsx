@@ -125,16 +125,16 @@ export default function Settings({ year }: { year: number }) {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-ink-900">Settings</h1>
-        <p className="text-sm text-ink-500">Manage classification tables and configuration</p>
+        <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Settings</h1>
+        <p className="text-sm text-ink-500 dark:text-ink-400">Manage classification tables and configuration</p>
       </div>
 
-      <div className="flex gap-1 border-b border-ink-200">
+      <div className="flex gap-1 border-b border-ink-200 dark:border-ink-800">
         {tabs.map(t => (
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-all ${activeTab === t.id ? 'border-ink-900 text-ink-900' : 'border-transparent text-ink-400 hover:text-ink-600'}`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-all ${activeTab === t.id ? 'border-ink-900 dark:border-ink-100 text-ink-900 dark:text-ink-50' : 'border-transparent text-ink-400 dark:text-ink-500 hover:text-ink-600 dark:hover:text-ink-300'}`}
           >
             {t.label}
           </button>
@@ -144,7 +144,7 @@ export default function Settings({ year }: { year: number }) {
       {activeTab === 'channels' && (
         <div className="space-y-4">
           <div className="card p-4">
-            <h3 className="text-sm font-semibold text-ink-700 mb-3">Add Channel</h3>
+            <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">Add Channel</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <input type="text" value={newChannel.name} onChange={e => setNewChannel({ ...newChannel, name: e.target.value })} className="input" placeholder="Channel name" />
               <input type="text" value={newChannel.aliases} onChange={e => setNewChannel({ ...newChannel, aliases: e.target.value })} className="input" placeholder="Aliases (comma-separated)" />
@@ -154,12 +154,12 @@ export default function Settings({ year }: { year: number }) {
           <div className="card p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {channels.map(ch => (
-                <div key={ch.id} className="border border-ink-200 rounded-lg p-3 flex items-center justify-between">
+                <div key={ch.id} className="border border-ink-200 dark:border-ink-800 rounded-lg p-3 flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">{ch.name}</p>
-                    {ch.aliases?.length > 0 && <p className="text-xs text-ink-400">{ch.aliases.join(', ')}</p>}
+                    {ch.aliases?.length > 0 && <p className="text-xs text-ink-400 dark:text-ink-500">{ch.aliases.join(', ')}</p>}
                   </div>
-                  <button onClick={() => deleteChannel(ch.id)} className="p-1.5 rounded text-ink-300 hover:text-red-500"><Trash2 size={14} /></button>
+                  <button onClick={() => deleteChannel(ch.id)} className="p-1.5 rounded text-ink-300 dark:text-ink-600 hover:text-red-500 dark:hover:text-red-400"><Trash2 size={14} /></button>
                 </div>
               ))}
             </div>
@@ -170,7 +170,7 @@ export default function Settings({ year }: { year: number }) {
       {activeTab === 'mappings' && (
         <div className="space-y-4">
           <div className="card p-4">
-            <h3 className="text-sm font-semibold text-ink-700 mb-3">Add Category Mapping</h3>
+            <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">Add Category Mapping</h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <input type="text" value={newMapping.category} onChange={e => setNewMapping({ ...newMapping, category: e.target.value })} className="input" placeholder="Category name" />
               <select value={newMapping.bucket} onChange={e => setNewMapping({ ...newMapping, bucket: e.target.value })} className="input">
@@ -185,7 +185,7 @@ export default function Settings({ year }: { year: number }) {
           </div>
           <div className="card overflow-hidden">
             <table className="w-full">
-              <thead className="bg-ink-50">
+              <thead className="bg-ink-50 dark:bg-ink-800">
                 <tr>
                   <th className="table-header text-left px-4 py-2">Category</th>
                   <th className="table-header text-left px-4 py-2">Bucket</th>
@@ -195,7 +195,7 @@ export default function Settings({ year }: { year: number }) {
               </thead>
               <tbody>
                 {mappings.map(m => (
-                  <tr key={m.id} className="border-t border-ink-100">
+                  <tr key={m.id} className="border-t border-ink-100 dark:border-ink-800">
                     <td className="table-cell">{m.category}</td>
                     <td className="table-cell">
                       <select value={m.bucket} onChange={e => updateMapping(m.id, { bucket: e.target.value })} className="input py-1">
@@ -209,7 +209,7 @@ export default function Settings({ year }: { year: number }) {
                       </select>
                     </td>
                     <td className="table-cell text-right">
-                      <button onClick={() => deleteMapping(m.id)} className="p-1.5 rounded text-ink-300 hover:text-red-500"><Trash2 size={14} /></button>
+                      <button onClick={() => deleteMapping(m.id)} className="p-1.5 rounded text-ink-300 dark:text-ink-600 hover:text-red-500 dark:hover:text-red-400"><Trash2 size={14} /></button>
                     </td>
                   </tr>
                 ))}
@@ -226,7 +226,7 @@ export default function Settings({ year }: { year: number }) {
             <button onClick={addBucket} className="btn-primary"><Plus size={16} /> Add</button>
           </div>
           <div className="flex flex-wrap gap-2">
-            {buckets.map(b => <span key={b} className="badge-gray flex items-center gap-1">{b} <button onClick={() => removeBucket(b)} className="text-ink-300 hover:text-red-500">×</button></span>)}
+            {buckets.map(b => <span key={b} className="badge-gray flex items-center gap-1">{b} <button onClick={() => removeBucket(b)} className="text-ink-300 dark:text-ink-600 hover:text-red-500 dark:hover:text-red-400">×</button></span>)}
           </div>
         </div>
       )}
@@ -234,7 +234,7 @@ export default function Settings({ year }: { year: number }) {
       {activeTab === 'roles' && (
         <div className="space-y-4">
           <div className="card p-4">
-            <h3 className="text-sm font-semibold text-ink-700 mb-3">ACQ Roles</h3>
+            <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">ACQ Roles</h3>
             <div className="flex gap-2 mb-3">
               <input type="text" value={newAcqRole} onChange={e => setNewAcqRole(e.target.value)} className="input" placeholder="New role" />
               <button onClick={addAcqRole} className="btn-primary"><Plus size={16} /> Add</button>
@@ -244,7 +244,7 @@ export default function Settings({ year }: { year: number }) {
             </div>
           </div>
           <div className="card p-4">
-            <h3 className="text-sm font-semibold text-ink-700 mb-3">Dispo Roles</h3>
+            <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">Dispo Roles</h3>
             <div className="flex gap-2 mb-3">
               <input type="text" value={newDispoRole} onChange={e => setNewDispoRole(e.target.value)} className="input" placeholder="New role" />
               <button onClick={addDispoRole} className="btn-primary"><Plus size={16} /> Add</button>

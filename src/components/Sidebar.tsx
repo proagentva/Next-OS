@@ -2,6 +2,7 @@ import { type ReactNode } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { hasTabAccess } from '../lib/utils'
+import { ThemeToggle } from './ThemeToggle'
 import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users } from 'lucide-react'
 
 interface SidebarProps {
@@ -34,14 +35,14 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   const visibleItems = NAV_ITEMS.filter(item => item.id === 'profile' || hasTabAccess(currentMembership, item.id))
 
   return (
-    <div className="w-60 h-screen bg-white border-r border-ink-200 flex flex-col flex-shrink-0">
+    <div className="w-60 h-screen bg-white dark:bg-ink-900 border-r border-ink-200 dark:border-ink-800 flex flex-col flex-shrink-0">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-ink-200">
+      <div className="px-5 py-5 border-b border-ink-200 dark:border-ink-800">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-ink-900 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-ink-900 dark:bg-ink-700 flex items-center justify-center">
             <span className="text-white font-bold text-sm">N</span>
           </div>
-          <span className="font-bold text-ink-900">NextOS</span>
+          <span className="font-bold text-ink-900 dark:text-ink-50">NextOS</span>
         </div>
       </div>
 
@@ -56,8 +57,8 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
               onClick={() => onNavigate(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 active
-                  ? 'bg-ink-900 text-white'
-                  : 'text-ink-600 hover:bg-ink-100'
+                  ? 'bg-ink-900 dark:bg-ink-700 text-white'
+                  : 'text-ink-600 dark:text-ink-300 hover:bg-ink-100 dark:hover:bg-ink-800'
               }`}
             >
               <Icon size={18} />
@@ -68,26 +69,29 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
       </nav>
 
       {/* User card pinned to bottom */}
-      <div className="border-t border-ink-200 p-3">
+      <div className="border-t border-ink-200 dark:border-ink-800 p-3">
         <div className="flex items-center gap-3 px-2 py-2">
-          <div className="w-9 h-9 rounded-full bg-ink-900 text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
+          <div className="w-9 h-9 rounded-full bg-ink-900 dark:bg-ink-700 text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-ink-900 truncate">
+            <p className="text-sm font-medium text-ink-900 dark:text-ink-50 truncate">
               {profile?.display_name || 'User'}
             </p>
-            <p className="text-xs text-ink-400 truncate">
+            <p className="text-xs text-ink-400 dark:text-ink-500 truncate">
               {profile?.email || ''}
             </p>
           </div>
-          <button
-            onClick={signOut}
-            className="p-2 rounded-lg text-ink-400 hover:bg-ink-100 hover:text-ink-700 transition-all"
-            title="Sign out"
-          >
-            <LogOut size={16} />
-          </button>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <button
+              onClick={signOut}
+              className="p-2 rounded-lg text-ink-400 dark:text-ink-500 hover:bg-ink-100 dark:hover:bg-ink-800 hover:text-ink-700 dark:hover:text-ink-200 transition-all"
+              title="Sign out"
+            >
+              <LogOut size={16} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -98,7 +102,7 @@ export function Layout({ children, currentPage, onNavigate }: { children: ReactN
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar currentPage={currentPage} onNavigate={onNavigate} />
-      <main className="flex-1 overflow-y-auto bg-ink-50">
+      <main className="flex-1 overflow-y-auto bg-ink-50 dark:bg-ink-950">
         {children}
       </main>
     </div>

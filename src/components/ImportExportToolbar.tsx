@@ -87,17 +87,17 @@ export function ImportExportToolbar({ schema, tableName, organizationId, onImpor
           onMouseEnter={() => setShowInfo(true)}
           onMouseLeave={() => setShowInfo(false)}
           onClick={() => setShowInfo(!showInfo)}
-          className="p-2 rounded-lg text-ink-400 hover:bg-ink-100 hover:text-ink-600"
+          className="p-2 rounded-lg text-ink-400 dark:text-ink-500 hover:bg-ink-100 dark:hover:bg-ink-800 hover:text-ink-600 dark:hover:text-ink-300"
         >
           <Info size={16} />
         </button>
         {showInfo && (
           <div className="absolute right-0 top-full mt-2 z-50 card p-4 w-72 animate-fade-in">
-            <p className="text-xs font-semibold text-ink-700 mb-2">Required Columns ({parseResult?.schema || schema}):</p>
-            <ol className="text-xs text-ink-600 space-y-1 list-decimal list-inside">
+            <p className="text-xs font-semibold text-ink-700 dark:text-ink-300 mb-2">Required Columns ({parseResult?.schema || schema}):</p>
+            <ol className="text-xs text-ink-600 dark:text-ink-300 space-y-1 list-decimal list-inside">
               {headers.map(h => <li key={h}>{h}</li>)}
             </ol>
-            <p className="text-xs text-ink-400 mt-2">CSV, XLSX, or JSON. Headers must match exactly.</p>
+            <p className="text-xs text-ink-400 dark:text-ink-500 mt-2">CSV, XLSX, or JSON. Headers must match exactly.</p>
           </div>
         )}
       </div>
@@ -107,28 +107,28 @@ export function ImportExportToolbar({ schema, tableName, organizationId, onImpor
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowImport(false)}>
           <div className="card p-6 w-full max-w-3xl max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-ink-900">Import Preview — {parseResult.schema}</h3>
-              <button onClick={() => setShowImport(false)} className="text-ink-400 hover:text-ink-600">
+              <h3 className="text-lg font-semibold text-ink-900 dark:text-ink-50">Import Preview — {parseResult.schema}</h3>
+              <button onClick={() => setShowImport(false)} className="text-ink-400 dark:text-ink-500 hover:text-ink-600 dark:hover:text-ink-300">
                 <X size={20} />
               </button>
             </div>
 
             {parseResult.headerErrors.length > 0 && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                <div className="flex items-center gap-2 text-red-700 font-medium mb-1">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-2 text-red-700 dark:text-red-300 font-medium mb-1">
                   <AlertCircle size={16} /> Header Validation Errors
                 </div>
-                <ul className="text-sm text-red-600 list-disc list-inside">
+                <ul className="text-sm text-red-600 dark:text-red-300 list-disc list-inside">
                   {parseResult.headerErrors.map((e, i) => <li key={i}>{e}</li>)}
                 </ul>
                 <div className="mt-3">
-                  <p className="text-xs text-ink-500 mb-1">Select the correct format:</p>
+                  <p className="text-xs text-ink-500 dark:text-ink-400 mb-1">Select the correct format:</p>
                   <div className="flex gap-2">
                     {(['ledger', 'acq', 'dispo'] as SchemaType[]).map(s => (
                       <button
                         key={s}
                         onClick={() => setForcedSchema(s)}
-                        className={`px-3 py-1 rounded-md text-xs font-medium ${forcedSchema === s ? 'bg-ink-900 text-white' : 'bg-ink-100 text-ink-600'}`}
+                        className={`px-3 py-1 rounded-md text-xs font-medium ${forcedSchema === s ? 'bg-ink-900 dark:bg-ink-700 text-white' : 'bg-ink-100 dark:bg-ink-800 text-ink-600 dark:text-ink-300'}`}
                       >
                         {s === 'ledger' ? 'Ledger' : s === 'acq' ? 'Acquisition' : 'Disposition'}
                       </button>
@@ -140,25 +140,25 @@ export function ImportExportToolbar({ schema, tableName, organizationId, onImpor
 
             <div className="flex gap-4 mb-4">
               <div className="flex items-center gap-2 text-sm">
-                <FileSpreadsheet size={16} className="text-ink-400" />
-                <span className="text-ink-600">{parseResult.totalRows} rows</span>
+                <FileSpreadsheet size={16} className="text-ink-400 dark:text-ink-500" />
+                <span className="text-ink-600 dark:text-ink-300">{parseResult.totalRows} rows</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <CheckCircle size={16} className="text-accent-600" />
-                <span className="text-accent-700">{parseResult.validRows} valid</span>
+                <CheckCircle size={16} className="text-accent-600 dark:text-accent-400" />
+                <span className="text-accent-700 dark:text-accent-400">{parseResult.validRows} valid</span>
               </div>
               {parseResult.errorRows > 0 && (
                 <div className="flex items-center gap-2 text-sm">
-                  <AlertCircle size={16} className="text-red-500" />
-                  <span className="text-red-600">{parseResult.errorRows} errors</span>
+                  <AlertCircle size={16} className="text-red-500 dark:text-red-400" />
+                  <span className="text-red-600 dark:text-red-400">{parseResult.errorRows} errors</span>
                 </div>
               )}
             </div>
 
             {parseResult.errorRows > 0 && parseResult.rows.length > 0 && (
-              <div className="mb-4 max-h-48 overflow-y-auto border border-ink-200 rounded-lg">
+              <div className="mb-4 max-h-48 overflow-y-auto border border-ink-200 dark:border-ink-800 rounded-lg">
                 <table className="w-full">
-                  <thead className="bg-ink-50 sticky top-0">
+                  <thead className="bg-ink-50 dark:bg-ink-800 sticky top-0">
                     <tr>
                       <th className="table-header text-left px-3 py-2">Row</th>
                       <th className="table-header text-left px-3 py-2">Errors</th>
@@ -166,9 +166,9 @@ export function ImportExportToolbar({ schema, tableName, organizationId, onImpor
                   </thead>
                   <tbody>
                     {parseResult.rows.filter(r => r.errors.length > 0).slice(0, 50).map(r => (
-                      <tr key={r.rowNumber} className="border-t border-ink-100">
-                        <td className="px-3 py-2 text-xs text-ink-500 font-mono">{r.rowNumber}</td>
-                        <td className="px-3 py-2 text-xs text-red-600">{r.errors.join('; ')}</td>
+                      <tr key={r.rowNumber} className="border-t border-ink-100 dark:border-ink-800">
+                        <td className="px-3 py-2 text-xs text-ink-500 dark:text-ink-400 font-mono">{r.rowNumber}</td>
+                        <td className="px-3 py-2 text-xs text-red-600 dark:text-red-400">{r.errors.join('; ')}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -177,7 +177,7 @@ export function ImportExportToolbar({ schema, tableName, organizationId, onImpor
             )}
 
             {importMsg && (
-              <div className={`rounded-lg p-3 mb-4 text-sm ${importMsg.includes('error') ? 'bg-red-50 text-red-600' : 'bg-accent-50 text-accent-700'}`}>
+              <div className={`rounded-lg p-3 mb-4 text-sm ${importMsg.includes('error') ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300' : 'bg-accent-50 dark:bg-accent-900/20 text-accent-700 dark:text-accent-400'}`}>
                 {importMsg}
               </div>
             )}

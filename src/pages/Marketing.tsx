@@ -62,8 +62,8 @@ export default function Marketing({ year }: { year: number }) {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ink-900">Marketing</h1>
-          <p className="text-sm text-ink-500">Calculated from Ledger — Acquisition bucket costs only</p>
+          <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Marketing</h1>
+          <p className="text-sm text-ink-500 dark:text-ink-400">Calculated from Ledger — Acquisition bucket costs only</p>
         </div>
         <div className="flex items-center gap-3">
           <select value={quarter ?? ''} onChange={e => setQuarter(e.target.value ? Number(e.target.value) : undefined)} className="input w-32">
@@ -81,7 +81,7 @@ export default function Marketing({ year }: { year: number }) {
 
       {showAdd && (
         <div className="card p-4 animate-fade-in">
-          <h3 className="text-sm font-semibold text-ink-700 mb-3">New Marketing Channel</h3>
+          <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300 mb-3">New Marketing Channel</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="label">Channel Name</label>
@@ -101,12 +101,12 @@ export default function Marketing({ year }: { year: number }) {
 
       {/* Unmapped Warning */}
       {unmapped.length > 0 && (
-        <div className="card p-4 border-gold-300 bg-gold-50">
+        <div className="card p-4 border-gold-300 dark:border-gold-700/50 bg-gold-50 dark:bg-gold-700/10">
           <div className="flex items-start gap-3">
-            <AlertTriangle size={20} className="text-gold-600 flex-shrink-0 mt-0.5" />
+            <AlertTriangle size={20} className="text-gold-600 dark:text-gold-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-gold-800">Unmapped Categories in Acquisition Bucket</p>
-              <p className="text-xs text-gold-700 mt-1">These ledger categories don't map to any channel. Add them to a channel's aliases or create a category mapping in Settings.</p>
+              <p className="text-sm font-semibold text-gold-800 dark:text-gold-300">Unmapped Categories in Acquisition Bucket</p>
+              <p className="text-xs text-gold-700 dark:text-gold-400 mt-1">These ledger categories don't map to any channel. Add them to a channel's aliases or create a category mapping in Settings.</p>
               <div className="flex flex-wrap gap-2 mt-2">
                 {unmapped.map(c => <span key={c} className="badge-gold">{c}</span>)}
               </div>
@@ -117,11 +117,11 @@ export default function Marketing({ year }: { year: number }) {
 
       {/* Cost Table */}
       <div className="card p-5">
-        <h2 className="text-lg font-semibold text-ink-900 mb-4">Acquisition Cost by Channel</h2>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Acquisition Cost by Channel</h2>
         {loading ? (
-          <div className="text-center text-ink-400 py-8">Loading...</div>
+          <div className="text-center text-ink-400 dark:text-ink-500 py-8">Loading...</div>
         ) : marketingData.length === 0 ? (
-          <div className="text-center text-ink-400 py-8">
+          <div className="text-center text-ink-400 dark:text-ink-500 py-8">
             <Megaphone size={32} className="mx-auto mb-2 opacity-30" />
             <p>No Acquisition-bucket ledger entries found for {year}.</p>
             <p className="text-xs mt-1">Import a Ledger CSV to see marketing costs here.</p>
@@ -130,7 +130,7 @@ export default function Marketing({ year }: { year: number }) {
           <>
             <table className="w-full">
               <thead>
-                <tr className="border-b border-ink-200">
+                <tr className="border-b border-ink-200 dark:border-ink-800">
                   <th className="table-header text-left px-4 py-2">Channel</th>
                   <th className="table-header text-right px-4 py-2">Acquisition Cost</th>
                   <th className="table-header text-right px-4 py-2">% of Total</th>
@@ -138,19 +138,19 @@ export default function Marketing({ year }: { year: number }) {
               </thead>
               <tbody>
                 {marketingData.map(m => (
-                  <tr key={m.channel} className="border-b border-ink-100 hover:bg-ink-50">
+                  <tr key={m.channel} className="border-b border-ink-100 dark:border-ink-800 hover:bg-ink-50 dark:hover:bg-ink-800">
                     <td className="table-cell font-medium">
-                      {m.channel === 'Unmapped' ? <span className="text-gold-600">{m.channel}</span> : m.channel}
+                      {m.channel === 'Unmapped' ? <span className="text-gold-600 dark:text-gold-400">{m.channel}</span> : m.channel}
                     </td>
                     <td className="table-cell text-right font-mono">{formatCurrency(m.cost)}</td>
-                    <td className="table-cell text-right font-mono text-ink-500">
+                    <td className="table-cell text-right font-mono text-ink-500 dark:text-ink-400">
                       {totalCost > 0 ? `${((m.cost / totalCost) * 100).toFixed(1)}%` : '—'}
                     </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="border-t-2 border-ink-300 bg-ink-50 font-semibold">
+                <tr className="border-t-2 border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-800 font-semibold">
                   <td className="table-cell">Total</td>
                   <td className="table-cell text-right font-mono">{formatCurrency(totalCost)}</td>
                   <td className="table-cell text-right font-mono">100%</td>
@@ -163,17 +163,17 @@ export default function Marketing({ year }: { year: number }) {
 
       {/* Channel Manager */}
       <div className="card p-5">
-        <h2 className="text-lg font-semibold text-ink-900 mb-4">Marketing Channels</h2>
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-ink-50 mb-4">Marketing Channels</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {channels.map(ch => (
-            <div key={ch.id} className="border border-ink-200 rounded-lg p-3 flex items-center justify-between">
+            <div key={ch.id} className="border border-ink-200 dark:border-ink-800 rounded-lg p-3 flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-ink-900">{ch.name}</p>
+                <p className="text-sm font-medium text-ink-900 dark:text-ink-50">{ch.name}</p>
                 {ch.aliases && ch.aliases.length > 0 && (
-                  <p className="text-xs text-ink-400 mt-0.5">Aliases: {ch.aliases.join(', ')}</p>
+                  <p className="text-xs text-ink-400 dark:text-ink-500 mt-0.5">Aliases: {ch.aliases.join(', ')}</p>
                 )}
               </div>
-              <button onClick={() => deleteChannel(ch.id)} className="p-1.5 rounded text-ink-300 hover:text-red-500 hover:bg-red-50">
+              <button onClick={() => deleteChannel(ch.id)} className="p-1.5 rounded text-ink-300 dark:text-ink-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30">
                 <Trash2 size={14} />
               </button>
             </div>
