@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { ImportExportToolbar } from '../components/ImportExportToolbar'
+import { useOrganization } from '../contexts/OrganizationContext'
 import { formatDate, formatNumber } from '../lib/utils'
 import type { DispoActivity } from '../lib/types'
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -9,6 +10,7 @@ const DISPO_ROLES = ['Disposition Agent', 'Sr Dispo', 'Jr Dispo']
 const PAGE_SIZE = 50
 
 export default function Disposition({ year }: { year: number }) {
+  const { currentOrganization } = useOrganization()
   const [rows, setRows] = useState<DispoActivity[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(0)
@@ -61,6 +63,7 @@ export default function Disposition({ year }: { year: number }) {
         <ImportExportToolbar
           schema="dispo"
           tableName="dispo_activity"
+          organizationId={currentOrganization!.id}
           onImported={fetchRows}
           exportRows={exportRows}
           exportFilename={`dispo_export_${new Date().toISOString().split('T')[0]}.csv`}

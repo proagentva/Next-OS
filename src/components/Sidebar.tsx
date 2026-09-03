@@ -1,6 +1,8 @@
 import { type ReactNode } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User } from 'lucide-react'
+import { useOrganization } from '../contexts/OrganizationContext'
+import { hasTabAccess } from '../lib/utils'
+import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users } from 'lucide-react'
 
 interface SidebarProps {
   currentPage: string
@@ -15,17 +17,21 @@ const NAV_ITEMS = [
   { id: 'quarterly', label: 'Quarterly View', icon: CalendarDays },
   { id: 'reports', label: 'Reports', icon: FileText },
   { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'team', label: 'Team', icon: Users },
   { id: 'profile', label: 'Profile', icon: User },
 ]
 
 export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   const { profile, signOut } = useAuth()
+  const { currentMembership } = useOrganization()
   const initials = (profile?.display_name || profile?.email || 'U')
     .split(' ')
     .map(w => w[0])
     .join('')
     .slice(0, 2)
     .toUpperCase()
+
+  const visibleItems = NAV_ITEMS.filter(item => item.id === 'profile' || hasTabAccess(currentMembership, item.id))
 
   return (
     <div className="w-60 h-screen bg-white border-r border-ink-200 flex flex-col flex-shrink-0">
@@ -41,7 +47,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map(item => {
+        {visibleItems.map(item => {
           const Icon = item.icon
           const active = currentPage === item.id
           return (

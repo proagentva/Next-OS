@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { useOrganization } from '../contexts/OrganizationContext'
 import { formatCurrency } from '../lib/utils'
 import { Plus, Trash2, Save } from 'lucide-react'
 import type { MarketingChannel, CategoryMapping } from '../lib/types'
 
 export default function Settings({ year }: { year: number }) {
+  const { currentOrganization } = useOrganization()
+  const orgId = currentOrganization!.id
   const [channels, setChannels] = useState<MarketingChannel[]>([])
   const [mappings, setMappings] = useState<CategoryMapping[]>([])
   const [buckets, setBuckets] = useState<string[]>([])
@@ -36,13 +39,16 @@ export default function Settings({ year }: { year: number }) {
   }, [])
 
   const updateConfig = async (key: string, value: any) => {
-    await supabase.from('app_config').upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+    await supabase.from('app_config').upsert(
+      { organization_id: orgId, key, value, updated_at: new Date().toISOString() },
+      { onConflict: 'organization_id,key' }
+    )
   }
 
   const addChannel = async () => {
     if (!newChannel.name.trim()) return
     const aliases = newChannel.aliases.split(',').map(a => a.trim()).filter(Boolean)
-    const { data } = await supabase.from('marketing_channels').insert({ name: newChannel.name.trim(), aliases }).select().maybeSingle()
+    const { data } = await supabase.from('marketing_channels').insert({ organization_id: orgId, name: newChannel.name.trim(), aliases }).select().maybeSingle()
     if (data) setChannels([...channels, data])
     setNewChannel({ name: '', aliases: '' })
   }
@@ -55,6 +61,7 @@ export default function Settings({ year }: { year: number }) {
   const addMapping = async () => {
     if (!newMapping.category.trim()) return
     const { data } = await supabase.from('category_mappings').insert({
+      organization_id: orgId,
       category: newMapping.category.trim(),
       bucket: newMapping.bucket,
       channel: newMapping.channel || null,

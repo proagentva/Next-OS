@@ -164,7 +164,7 @@ export default function AuthPage() {
         </div>
 
         <p className="text-center text-xs text-ink-400 mt-6">
-          Single shared workspace — all team members see the same data.
+          After signing in, you'll create or join your team's organization.
         </p>
       </div>
     </div>

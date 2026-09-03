@@ -6,12 +6,13 @@ import { parseFile, exportToCSV, downloadCSV, getSchemaHeaders, type SchemaType,
 interface ImportExportToolbarProps {
   schema: SchemaType
   tableName: string
+  organizationId: string
   onImported: () => void
   exportRows: Record<string, any>[]
   exportFilename: string
 }
 
-export function ImportExportToolbar({ schema, tableName, onImported, exportRows, exportFilename }: ImportExportToolbarProps) {
+export function ImportExportToolbar({ schema, tableName, organizationId, onImported, exportRows, exportFilename }: ImportExportToolbarProps) {
   const [showInfo, setShowInfo] = useState(false)
   const [showImport, setShowImport] = useState(false)
   const [parseResult, setParseResult] = useState<ParseResult | null>(null)
@@ -42,7 +43,7 @@ export function ImportExportToolbar({ schema, tableName, onImported, exportRows,
 
     const validData = parseResult.rows
       .filter(r => r.errors.length === 0)
-      .map(r => r.data)
+      .map(r => ({ ...r.data, organization_id: organizationId }))
 
     try {
       // Insert in batches of 500

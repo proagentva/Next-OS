@@ -87,6 +87,49 @@ export interface Profile {
   role: string
 }
 
+// Canonical tab keys — identical across every organization, only which
+// subset each member is granted (organization_members.allowed_tabs) varies.
+export const ORG_TAB_IDS = [
+  'dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly',
+  'reports', 'settings', 'team', 'profile',
+] as const
+export type OrgTabId = typeof ORG_TAB_IDS[number]
+
+export type OrgRole = 'owner' | 'admin' | 'member'
+
+export interface Organization {
+  id: string
+  name: string
+  code: string
+  timezone: string
+  created_by: string | null
+  created_at: string
+}
+
+export interface OrganizationMember {
+  id: string
+  organization_id: string
+  user_id: string
+  role: string
+  kpi_role: string | null
+  allowed_tabs: string[]
+  joined_at: string
+}
+
+export interface OrganizationInvite {
+  id: string
+  organization_id: string
+  token: string
+  email: string | null
+  invited_role: string
+  invited_kpi_role: string | null
+  invited_allowed_tabs: string[]
+  created_by: string | null
+  expires_at: string | null
+  used_at: string | null
+  created_at: string
+}
+
 // Rollup types
 export interface PeriodRollup {
   year: number

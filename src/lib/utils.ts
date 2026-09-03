@@ -1,8 +1,16 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import type { OrganizationMember } from './types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+// Owners implicitly have every tab — not stored on the membership row.
+export function hasTabAccess(membership: OrganizationMember | null, tabId: string): boolean {
+  if (!membership) return false
+  if (membership.role === 'owner') return true
+  return membership.allowed_tabs.includes(tabId)
 }
 
 export function formatCurrency(amount: number): string {

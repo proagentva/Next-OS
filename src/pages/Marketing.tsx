@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { useOrganization } from '../contexts/OrganizationContext'
 import { getMarketingCostByChannel, getUnmappedCategories } from '../lib/rollups'
 import { formatCurrency } from '../lib/utils'
 import type { MarketingChannel } from '../lib/types'
 import { Plus, AlertTriangle, Trash2, Megaphone } from 'lucide-react'
 
 export default function Marketing({ year }: { year: number }) {
+  const { currentOrganization } = useOrganization()
   const [channels, setChannels] = useState<MarketingChannel[]>([])
   const [marketingData, setMarketingData] = useState<{ channel: string; cost: number }[]>([])
   const [unmapped, setUnmapped] = useState<string[]>([])
@@ -38,7 +40,7 @@ export default function Marketing({ year }: { year: number }) {
   const addChannel = async () => {
     if (!newName.trim()) return
     const aliases = newAliases.split(',').map(a => a.trim()).filter(Boolean)
-    const { error } = await supabase.from('marketing_channels').insert({ name: newName.trim(), aliases })
+    const { error } = await supabase.from('marketing_channels').insert({ organization_id: currentOrganization!.id, name: newName.trim(), aliases })
     if (error) {
       console.error('Add channel error:', error)
       return
