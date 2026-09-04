@@ -85,6 +85,7 @@ export interface Profile {
   display_name: string
   email: string | null
   role: string
+  avatar_url: string | null
 }
 
 // Canonical tab keys — identical across every organization, only which
@@ -185,7 +186,17 @@ export interface KanbanCard {
   origin_list_key: string | null
   archived: boolean
   archived_at: string | null
+  assigned_to: string | null
   created_by: string | null
+  created_at: string
+}
+
+export interface KanbanComment {
+  id: string
+  card_id: string
+  organization_id: string
+  user_id: string | null
+  body: string
   created_at: string
 }
 

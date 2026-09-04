@@ -4,10 +4,32 @@ import { ImportExportToolbar } from '../components/ImportExportToolbar'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { formatDate, formatNumber } from '../lib/utils'
 import type { DispoActivity } from '../lib/types'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 
 const DISPO_ROLES = ['Disposition Agent', 'Sr Dispo', 'Jr Dispo']
 const PAGE_SIZE = 50
+
+const NUMERIC_FIELDS: { key: keyof typeof emptyForm; label: string }[] = [
+  { key: 'total_dials', label: 'Total Dials' },
+  { key: 'calls_connected', label: 'Calls Connected' },
+  { key: 'follow_ups', label: 'Follow-Ups' },
+  { key: 'buyer_box_collected', label: 'Buyer Box Collected' },
+  { key: 'scheduled_deals', label: 'Scheduled Deals' },
+  { key: 'deals_pitched', label: 'Deals Pitched' },
+  { key: 'queries', label: 'Queries' },
+  { key: 'offers', label: 'Offers' },
+  { key: 'offers_made', label: 'Offers Made' },
+  { key: 'deals_locked_up', label: 'Deals Locked Up' },
+]
+
+const emptyForm = {
+  date: new Date().toISOString().split('T')[0],
+  employee: '',
+  role: DISPO_ROLES[0],
+  total_dials: '', calls_connected: '', follow_ups: '', buyer_box_collected: '', scheduled_deals: '',
+  deals_pitched: '', queries: '', offers: '', offers_made: '', deals_locked_up: '',
+  notes: '',
+}
 
 export default function Disposition({ year }: { year: number }) {
   const { currentOrganization } = useOrganization()
@@ -16,6 +38,8 @@ export default function Disposition({ year }: { year: number }) {
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const [filters, setFilters] = useState({ employee: '', role: '', dateFrom: '', dateTo: '' })
+  const [showAdd, setShowAdd] = useState(false)
+  const [form, setForm] = useState(emptyForm)
 
   const fetchRows = useCallback(async () => {
     setLoading(true)
@@ -35,6 +59,31 @@ export default function Disposition({ year }: { year: number }) {
   }, [year, page, filters])
 
   useEffect(() => { fetchRows() }, [fetchRows])
+
+  const addRow = async () => {
+    if (!currentOrganization || !form.employee.trim() || !form.date) return
+    const { error } = await supabase.from('dispo_activity').insert({
+      organization_id: currentOrganization.id,
+      date: form.date,
+      employee: form.employee.trim(),
+      role: form.role,
+      total_dials: Number(form.total_dials) || 0,
+      calls_connected: Number(form.calls_connected) || 0,
+      follow_ups: Number(form.follow_ups) || 0,
+      buyer_box_collected: Number(form.buyer_box_collected) || 0,
+      scheduled_deals: Number(form.scheduled_deals) || 0,
+      deals_pitched: Number(form.deals_pitched) || 0,
+      queries: Number(form.queries) || 0,
+      offers: Number(form.offers) || 0,
+      offers_made: Number(form.offers_made) || 0,
+      deals_locked_up: Number(form.deals_locked_up) || 0,
+      notes: form.notes.trim() || null,
+    })
+    if (error) { console.error('Add dispo entry error:', error); return }
+    setForm(emptyForm)
+    setShowAdd(false)
+    fetchRows()
+  }
 
   const exportRows = rows.map(r => ({
     Date: r.date,
@@ -60,15 +109,55 @@ export default function Disposition({ year }: { year: number }) {
           <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Disposition KPIs</h1>
           <p className="text-sm text-ink-500 dark:text-ink-400">{total} records — {year}</p>
         </div>
-        <ImportExportToolbar
-          schema="dispo"
-          tableName="dispo_activity"
-          organizationId={currentOrganization!.id}
-          onImported={fetchRows}
-          exportRows={exportRows}
-          exportFilename={`dispo_export_${new Date().toISOString().split('T')[0]}.csv`}
-        />
+        <div className="flex items-center gap-3">
+          <button onClick={() => setShowAdd(!showAdd)} className="btn-accent">
+            <Plus size={16} /> Add Entry
+          </button>
+          <ImportExportToolbar
+            schema="dispo"
+            tableName="dispo_activity"
+            organizationId={currentOrganization!.id}
+            onImported={fetchRows}
+            exportRows={exportRows}
+            exportFilename={`dispo_export_${new Date().toISOString().split('T')[0]}.csv`}
+          />
+        </div>
       </div>
+
+      {showAdd && (
+        <div className="card p-4 animate-fade-in space-y-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label className="label">Date</label>
+              <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="input" />
+            </div>
+            <div>
+              <label className="label">Employee</label>
+              <input type="text" value={form.employee} onChange={e => setForm({ ...form, employee: e.target.value })} className="input" placeholder="Name" />
+            </div>
+            <div>
+              <label className="label">Role</label>
+              <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} className="input">
+                {DISPO_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            {NUMERIC_FIELDS.map(f => (
+              <div key={f.key}>
+                <label className="label">{f.label}</label>
+                <input type="number" value={form[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })} className="input" placeholder="0" />
+              </div>
+            ))}
+            <div className="col-span-2 md:col-span-4">
+              <label className="label">Notes</label>
+              <input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} className="input" />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <button onClick={() => setShowAdd(false)} className="btn-ghost">Cancel</button>
+            <button onClick={addRow} className="btn-primary">Add Entry</button>
+          </div>
+        </div>
+      )}
 
       <div className="card p-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">

@@ -4,10 +4,32 @@ import { ImportExportToolbar } from '../components/ImportExportToolbar'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { formatDate, formatNumber } from '../lib/utils'
 import type { AcqActivity } from '../lib/types'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 
 const ACQ_ROLES = ['ACQ Manager', 'Cold Caller', 'FUS', 'OM', 'Admin', 'SMM', 'PPC', 'PPL']
 const PAGE_SIZE = 50
+
+const NUMERIC_FIELDS: { key: keyof typeof emptyForm; label: string }[] = [
+  { key: 'dials', label: 'Dials' },
+  { key: 'conversations', label: 'Conversations' },
+  { key: 'leads_pushed', label: 'Leads Pushed' },
+  { key: 'pass_offs', label: 'Pass-Offs' },
+  { key: 'process', label: 'Process' },
+  { key: 'appts_set', label: 'Appts Set' },
+  { key: 'offers', label: 'Offers' },
+  { key: 'contracts', label: 'Contracts' },
+  { key: 'closed', label: 'Closed' },
+  { key: 'dropped', label: 'Dropped' },
+]
+
+const emptyForm = {
+  date: new Date().toISOString().split('T')[0],
+  employee: '',
+  role: ACQ_ROLES[1],
+  dials: '', conversations: '', leads_pushed: '', pass_offs: '', process: '',
+  appts_set: '', offers: '', contracts: '', closed: '', dropped: '',
+  notes: '',
+}
 
 export default function Acquisition({ year }: { year: number }) {
   const { currentOrganization } = useOrganization()
@@ -16,6 +38,8 @@ export default function Acquisition({ year }: { year: number }) {
   const [page, setPage] = useState(0)
   const [total, setTotal] = useState(0)
   const [filters, setFilters] = useState({ employee: '', role: '', dateFrom: '', dateTo: '' })
+  const [showAdd, setShowAdd] = useState(false)
+  const [form, setForm] = useState(emptyForm)
 
   const fetchRows = useCallback(async () => {
     setLoading(true)
@@ -35,6 +59,31 @@ export default function Acquisition({ year }: { year: number }) {
   }, [year, page, filters])
 
   useEffect(() => { fetchRows() }, [fetchRows])
+
+  const addRow = async () => {
+    if (!currentOrganization || !form.employee.trim() || !form.date) return
+    const { error } = await supabase.from('acq_activity').insert({
+      organization_id: currentOrganization.id,
+      date: form.date,
+      employee: form.employee.trim(),
+      role: form.role,
+      dials: Number(form.dials) || 0,
+      conversations: Number(form.conversations) || 0,
+      leads_pushed: Number(form.leads_pushed) || 0,
+      pass_offs: Number(form.pass_offs) || 0,
+      process: Number(form.process) || 0,
+      appts_set: Number(form.appts_set) || 0,
+      offers: Number(form.offers) || 0,
+      contracts: Number(form.contracts) || 0,
+      closed: Number(form.closed) || 0,
+      dropped: Number(form.dropped) || 0,
+      notes: form.notes.trim() || null,
+    })
+    if (error) { console.error('Add acq entry error:', error); return }
+    setForm(emptyForm)
+    setShowAdd(false)
+    fetchRows()
+  }
 
   const exportRows = rows.map(r => ({
     Date: r.date,
@@ -60,15 +109,55 @@ export default function Acquisition({ year }: { year: number }) {
           <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-50">Acquisition KPIs</h1>
           <p className="text-sm text-ink-500 dark:text-ink-400">{total} records — {year}</p>
         </div>
-        <ImportExportToolbar
-          schema="acq"
-          tableName="acq_activity"
-          organizationId={currentOrganization!.id}
-          onImported={fetchRows}
-          exportRows={exportRows}
-          exportFilename={`acq_export_${new Date().toISOString().split('T')[0]}.csv`}
-        />
+        <div className="flex items-center gap-3">
+          <button onClick={() => setShowAdd(!showAdd)} className="btn-accent">
+            <Plus size={16} /> Add Entry
+          </button>
+          <ImportExportToolbar
+            schema="acq"
+            tableName="acq_activity"
+            organizationId={currentOrganization!.id}
+            onImported={fetchRows}
+            exportRows={exportRows}
+            exportFilename={`acq_export_${new Date().toISOString().split('T')[0]}.csv`}
+          />
+        </div>
       </div>
+
+      {showAdd && (
+        <div className="card p-4 animate-fade-in space-y-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label className="label">Date</label>
+              <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} className="input" />
+            </div>
+            <div>
+              <label className="label">Employee</label>
+              <input type="text" value={form.employee} onChange={e => setForm({ ...form, employee: e.target.value })} className="input" placeholder="Name" />
+            </div>
+            <div>
+              <label className="label">Role</label>
+              <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} className="input">
+                {ACQ_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            {NUMERIC_FIELDS.map(f => (
+              <div key={f.key}>
+                <label className="label">{f.label}</label>
+                <input type="number" value={form[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })} className="input" placeholder="0" />
+              </div>
+            ))}
+            <div className="col-span-2 md:col-span-4">
+              <label className="label">Notes</label>
+              <input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} className="input" />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <button onClick={() => setShowAdd(false)} className="btn-ghost">Cancel</button>
+            <button onClick={addRow} className="btn-primary">Add Entry</button>
+          </div>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="card p-4">

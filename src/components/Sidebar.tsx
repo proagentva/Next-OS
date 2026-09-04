@@ -3,12 +3,18 @@ import { useAuth } from '../contexts/AuthContext'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { hasTabAccess } from '../lib/utils'
 import { ThemeToggle } from './ThemeToggle'
-import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users, Handshake, ClipboardList, Kanban } from 'lucide-react'
+import { Avatar } from './Avatar'
+import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users, Handshake, ClipboardList, Kanban, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface SidebarProps {
   currentPage: string
   onNavigate: (page: string) => void
+  year: number
+  onYearChange: (year: number) => void
 }
+
+// Pages whose data is scoped to a single calendar year.
+const YEAR_SCOPED_PAGES = new Set(['dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly', 'reports', 'settings'])
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -25,15 +31,9 @@ const NAV_ITEMS = [
   { id: 'profile', label: 'Profile', icon: User },
 ]
 
-export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
+export function Sidebar({ currentPage, onNavigate, year, onYearChange }: SidebarProps) {
   const { profile, signOut } = useAuth()
   const { currentMembership } = useOrganization()
-  const initials = (profile?.display_name || profile?.email || 'U')
-    .split(' ')
-    .map(w => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
 
   const visibleItems = NAV_ITEMS.filter(item => item.id === 'profile' || hasTabAccess(currentMembership, item.id))
 
@@ -48,6 +48,27 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           <span className="font-bold text-ink-900 dark:text-ink-50">NextOS</span>
         </div>
       </div>
+
+      {/* Year selector — only relevant for year-scoped pages */}
+      {YEAR_SCOPED_PAGES.has(currentPage) && (
+        <div className="px-5 py-3 border-b border-ink-200 dark:border-ink-800 flex items-center justify-between">
+          <button
+            onClick={() => onYearChange(year - 1)}
+            className="p-1 rounded text-ink-400 dark:text-ink-500 hover:bg-ink-100 dark:hover:bg-ink-800 hover:text-ink-700 dark:hover:text-ink-200"
+            title="Previous year"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span className="text-sm font-semibold text-ink-700 dark:text-ink-300">{year}</span>
+          <button
+            onClick={() => onYearChange(year + 1)}
+            className="p-1 rounded text-ink-400 dark:text-ink-500 hover:bg-ink-100 dark:hover:bg-ink-800 hover:text-ink-700 dark:hover:text-ink-200"
+            title="Next year"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -74,9 +95,7 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
       {/* User card pinned to bottom */}
       <div className="border-t border-ink-200 dark:border-ink-800 p-3">
         <div className="flex items-center gap-3 px-2 py-2">
-          <div className="w-9 h-9 rounded-full bg-ink-900 dark:bg-ink-700 text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
-            {initials}
-          </div>
+          <Avatar url={profile?.avatar_url} name={profile?.display_name || profile?.email || 'U'} size={9} />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-ink-900 dark:text-ink-50 truncate">
               {profile?.display_name || 'User'}
@@ -101,10 +120,10 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   )
 }
 
-export function Layout({ children, currentPage, onNavigate }: { children: ReactNode; currentPage: string; onNavigate: (p: string) => void }) {
+export function Layout({ children, currentPage, onNavigate, year, onYearChange }: { children: ReactNode; currentPage: string; onNavigate: (p: string) => void; year: number; onYearChange: (y: number) => void }) {
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar currentPage={currentPage} onNavigate={onNavigate} />
+      <Sidebar currentPage={currentPage} onNavigate={onNavigate} year={year} onYearChange={onYearChange} />
       <main className="flex-1 overflow-y-auto bg-ink-50 dark:bg-ink-950">
         {children}
       </main>

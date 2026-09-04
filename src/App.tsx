@@ -71,7 +71,7 @@ function AppContent() {
   }
 
   return (
-    <Layout currentPage={page} onNavigate={setPage}>
+    <Layout currentPage={page} onNavigate={setPage} year={year} onYearChange={setYear}>
       {renderPage()}
     </Layout>
   )

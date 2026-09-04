@@ -5,6 +5,7 @@ import { useOrganization } from '../contexts/OrganizationContext'
 import { formatDate } from '../lib/utils'
 import { ROSTER_STATUSES, DEAL_TYPES } from '../lib/types'
 import type { DealRosterEntry, Profile } from '../lib/types'
+import { Avatar } from '../components/Avatar'
 import { Plus, Trash2 } from 'lucide-react'
 
 const emptyForm = {
@@ -26,11 +27,29 @@ function timeLapse(dateAdded: string, nextTouch: string | null): string {
   return String(days)
 }
 
+// Days until next_touch (local calendar days, ignoring time-of-day) —
+// negative means overdue, 0/1 means due today/tomorrow.
+function daysUntilTouch(nextTouch: string): number {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const [y, m, d] = nextTouch.split('-').map(Number)
+  const touch = new Date(y, m - 1, d)
+  return Math.round((touch.getTime() - today.getTime()) / 86400000)
+}
+
+function touchDotColor(nextTouch: string | null): string | null {
+  if (!nextTouch) return null
+  const days = daysUntilTouch(nextTouch)
+  if (days < 0) return 'bg-red-500'
+  if (days <= 1) return 'bg-yellow-500'
+  return 'bg-green-500'
+}
+
 export default function DealRoster() {
   const { user } = useAuth()
   const { currentOrganization } = useOrganization()
   const [rows, setRows] = useState<DealRosterEntry[]>([])
-  const [members, setMembers] = useState<{ id: string; name: string }[]>([])
+  const [members, setMembers] = useState<{ id: string; name: string; avatar_url: string | null }[]>([])
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
   const [form, setForm] = useState(emptyForm)
@@ -52,7 +71,7 @@ export default function DealRoster() {
       ? await supabase.from('profiles').select('*').in('id', userIds)
       : { data: [] as Profile[] }
 
-    setMembers((profilesRes.data || []).map(p => ({ id: p.id, name: p.display_name || p.email || 'Unknown' })))
+    setMembers((profilesRes.data || []).map(p => ({ id: p.id, name: p.display_name || p.email || 'Unknown', avatar_url: p.avatar_url })))
     setRows(rosterRes.data || [])
     setLoading(false)
   }
@@ -236,12 +255,24 @@ export default function DealRoster() {
                       </select>
                     </td>
                     <td className="table-cell">
-                      <select value={r.owner || ''} onChange={e => updateRow(r.id, { owner: e.target.value || null })} className="input py-1">
-                        <option value="">Unassigned</option>
-                        {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                      </select>
+                      <div className="flex items-center gap-2">
+                        {r.owner && (
+                          <Avatar url={members.find(m => m.id === r.owner)?.avatar_url} name={members.find(m => m.id === r.owner)?.name || '?'} size={6} />
+                        )}
+                        <select value={r.owner || ''} onChange={e => updateRow(r.id, { owner: e.target.value || null })} className="input py-1">
+                          <option value="">Unassigned</option>
+                          {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                        </select>
+                      </div>
                     </td>
-                    <td className="table-cell whitespace-nowrap">{r.next_touch ? formatDate(r.next_touch) : '—'}</td>
+                    <td className="table-cell whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5">
+                        {r.next_touch ? formatDate(r.next_touch) : '—'}
+                        {touchDotColor(r.next_touch) && (
+                          <span className={`w-2 h-2 rounded-full ${touchDotColor(r.next_touch)}`} title={daysUntilTouch(r.next_touch!) < 0 ? 'Overdue' : daysUntilTouch(r.next_touch!) <= 1 ? 'Due soon' : 'On track'} />
+                        )}
+                      </span>
+                    </td>
                     <td className="table-cell text-right font-mono">{timeLapse(r.date_added, r.next_touch) || '—'}</td>
                     <td className="table-cell text-right">
                       <button onClick={() => deleteRow(r.id)} className="p-1.5 rounded text-ink-300 dark:text-ink-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30">

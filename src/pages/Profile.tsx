@@ -1,12 +1,17 @@
 import { useAuth } from '../contexts/AuthContext'
-import { useState } from 'react'
-import { User, Mail, Shield, LogOut } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { supabase } from '../lib/supabase'
+import { Avatar } from '../components/Avatar'
+import { Mail, Shield, LogOut, Camera } from 'lucide-react'
 
 export default function Profile() {
-  const { profile, updateProfile, signOut } = useAuth()
+  const { user, profile, updateProfile, signOut } = useAuth()
   const [displayName, setDisplayName] = useState(profile?.display_name || '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSave = async () => {
     setSaving(true)
@@ -16,12 +21,24 @@ export default function Profile() {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  const initials = (profile?.display_name || profile?.email || 'U')
-    .split(' ')
-    .map(w => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
+  const handleAvatarPick = async (file: File) => {
+    if (!user) return
+    if (!file.type.startsWith('image/')) { setUploadError('Please choose an image file.'); return }
+    if (file.size > 5 * 1024 * 1024) { setUploadError('Image must be under 5MB.'); return }
+    setUploadError(null)
+    setUploading(true)
+
+    const ext = file.name.split('.').pop()
+    const path = `${user.id}/avatar.${ext}`
+    const { error: uploadErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+    if (uploadErr) { setUploadError(uploadErr.message); setUploading(false); return }
+
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
+    // Cache-bust so the new image shows immediately even though the path is stable.
+    const bustUrl = `${urlData.publicUrl}?t=${Date.now()}`
+    await updateProfile({ avatar_url: bustUrl })
+    setUploading(false)
+  }
 
   return (
     <div className="p-6 max-w-2xl">
@@ -29,12 +46,29 @@ export default function Profile() {
 
       <div className="card p-6 space-y-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-ink-900 dark:bg-ink-700 text-white flex items-center justify-center text-xl font-medium">
-            {initials}
+          <div className="relative">
+            <Avatar url={profile?.avatar_url} name={profile?.display_name || profile?.email || 'U'} size={16} />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-ink-900 dark:bg-ink-700 text-white flex items-center justify-center border-2 border-white dark:border-ink-900 hover:bg-ink-800 dark:hover:bg-ink-600"
+              title="Change profile picture"
+            >
+              <Camera size={13} />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleAvatarPick(f); e.target.value = '' }}
+            />
           </div>
           <div>
             <p className="text-lg font-semibold text-ink-900 dark:text-ink-50">{profile?.display_name || 'User'}</p>
             <p className="text-sm text-ink-500 dark:text-ink-400">{profile?.email}</p>
+            {uploading && <p className="text-xs text-ink-400 dark:text-ink-500 mt-1">Uploading...</p>}
+            {uploadError && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{uploadError}</p>}
           </div>
         </div>
 
