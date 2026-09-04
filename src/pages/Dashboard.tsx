@@ -5,6 +5,7 @@ import { formatCurrency, formatNumber, safeRate } from '../lib/utils'
 import { useTheme } from '../contexts/ThemeContext'
 import { getBucketColor } from '../lib/colors'
 import { useDateRange, DateRangeSelector } from '../components/DateRangeSelector'
+import { CurrentlyOnBreak } from '../components/CurrentlyOnBreak'
 import type { AcqRollup, DispoRollup, FinancialRollup, MarketingRollup } from '../lib/types'
 import { TrendingUp, TrendingDown, DollarSign, Phone, FileCheck, Target } from 'lucide-react'
 
@@ -148,6 +149,8 @@ export default function Dashboard({ year }: { year: number }) {
           <p className="text-sm text-ink-500 dark:text-ink-400">Year {year} — YTD overview</p>
         </div>
       </div>
+
+      <CurrentlyOnBreak />
 
       {/* Date Range Summary — additive, doesn't affect the quarterly views below */}
       <div className="card p-5 space-y-4">

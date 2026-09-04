@@ -92,7 +92,7 @@ export interface Profile {
 // subset each member is granted (organization_members.allowed_tabs) varies.
 export const ORG_TAB_IDS = [
   'dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly',
-  'reports', 'settings', 'deals', 'deal_roster', 'kanban', 'calendar', 'team', 'profile',
+  'reports', 'settings', 'deals', 'deal_roster', 'kanban', 'calendar', 'attendance', 'team', 'profile',
 ] as const
 export type OrgTabId = typeof ORG_TAB_IDS[number]
 
@@ -188,6 +188,17 @@ export interface KanbanCard {
   archived_at: string | null
   assigned_to: string | null
   created_by: string | null
+  created_at: string
+}
+
+export type AttendanceEventType = 'sign_in' | 'sign_out' | 'break_start' | 'break_end'
+
+export interface AttendanceEntry {
+  id: string
+  organization_id: string
+  user_id: string
+  event_type: AttendanceEventType
+  occurred_at: string
   created_at: string
 }
 

@@ -4,7 +4,7 @@ import { useOrganization } from '../contexts/OrganizationContext'
 import { hasTabAccess } from '../lib/utils'
 import { ThemeToggle } from './ThemeToggle'
 import { Avatar } from './Avatar'
-import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users, Handshake, ClipboardList, Kanban, ChevronLeft, ChevronRight, CalendarRange } from 'lucide-react'
+import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users, Handshake, ClipboardList, Kanban, ChevronLeft, ChevronRight, CalendarRange, Clock } from 'lucide-react'
 
 interface SidebarProps {
   currentPage: string
@@ -14,7 +14,7 @@ interface SidebarProps {
 }
 
 // Pages whose data is scoped to a single calendar year.
-const YEAR_SCOPED_PAGES = new Set(['dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly', 'reports', 'settings'])
+const YEAR_SCOPED_PAGES = new Set(['dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly', 'reports', 'settings', 'attendance'])
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -28,6 +28,7 @@ const NAV_ITEMS = [
   { id: 'deal_roster', label: 'Daily Deals', icon: ClipboardList },
   { id: 'kanban', label: 'Task Manager', icon: Kanban },
   { id: 'calendar', label: 'Calendar', icon: CalendarRange },
+  { id: 'attendance', label: 'Attendance', icon: Clock },
   { id: 'team', label: 'Team', icon: Users },
   { id: 'profile', label: 'Profile', icon: User },
 ]
