@@ -5,7 +5,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { EVENT_LABELS, localDateInTz, localTimeInTz, logAttendanceEvent, computeClockState } from '../lib/attendance'
 import type { AttendanceEntry, Profile } from '../lib/types'
-import { LogIn, LogOut, Coffee, Check } from 'lucide-react'
+import { Avatar } from '../components/Avatar'
+import { LogIn, LogOut, Coffee, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
@@ -108,6 +109,105 @@ export default function Attendance({ year }: { year: number }) {
         </div>
       ) : (
         <YearlyView year={year} tz={tz} orgId={currentOrganization!.id} />
+      )}
+
+      {view === 'clock' && <TeamDayLog orgId={currentOrganization!.id} tz={tz} />}
+    </div>
+  )
+}
+
+function TeamDayLog({ orgId, tz }: { orgId: string; tz: string }) {
+  const [date, setDate] = useState(() => localDateInTz(new Date(), tz))
+  const [rows, setRows] = useState<{ id: string; name: string; avatar: string | null; signIn: string | null; signOut: string | null; status: string }[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true)
+      const [y, m, d] = date.split('-').map(Number)
+      const dayStart = new Date(y, m - 1, d)
+      const rangeFrom = new Date(dayStart.getTime() - 24 * 3600 * 1000).toISOString()
+      const rangeTo = new Date(dayStart.getTime() + 48 * 3600 * 1000).toISOString()
+
+      const [membersRes, entriesRes] = await Promise.all([
+        supabase.from('organization_members').select('user_id').eq('organization_id', orgId),
+        supabase.from('attendance_entries').select('*').eq('organization_id', orgId).gte('occurred_at', rangeFrom).lte('occurred_at', rangeTo).order('occurred_at', { ascending: true }),
+      ])
+      const userIds = (membersRes.data || []).map(m => m.user_id)
+      const profilesRes = userIds.length ? await supabase.from('profiles').select('*').in('id', userIds) : { data: [] as Profile[] }
+      const profileMap = new Map((profilesRes.data || []).map(p => [p.id, p]))
+
+      const byUser = new Map<string, AttendanceEntry[]>()
+      ;(entriesRes.data || []).forEach((e: AttendanceEntry) => {
+        if (localDateInTz(e.occurred_at, tz) !== date) return
+        const list = byUser.get(e.user_id) || []
+        list.push(e)
+        byUser.set(e.user_id, list)
+      })
+
+      const result = (userIds).map(id => {
+        const profile = profileMap.get(id)
+        const entries = byUser.get(id) || []
+        const signIn = entries.find(e => e.event_type === 'sign_in')
+        const signOuts = entries.filter(e => e.event_type === 'sign_out')
+        const signOut = signOuts[signOuts.length - 1]
+        const last = entries[entries.length - 1]
+        let status = 'Not signed in'
+        if (last) {
+          if (last.event_type === 'sign_out') status = 'Signed out'
+          else if (last.event_type === 'break_start') status = 'On break'
+          else status = 'Signed in'
+        }
+        return {
+          id,
+          name: profile?.display_name || profile?.email || 'Unknown',
+          avatar: profile?.avatar_url || null,
+          signIn: signIn ? localTimeInTz(signIn.occurred_at, tz) : null,
+          signOut: signOut ? localTimeInTz(signOut.occurred_at, tz) : null,
+          status,
+        }
+      }).sort((a, b) => a.name.localeCompare(b.name))
+
+      setRows(result)
+      setLoading(false)
+    })()
+  }, [orgId, tz, date])
+
+  const shiftDay = (delta: number) => {
+    const [y, m, d] = date.split('-').map(Number)
+    const next = new Date(y, m - 1, d + delta)
+    setDate(format(next, 'yyyy-MM-dd'))
+  }
+
+  return (
+    <div className="card p-4 max-w-2xl space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-ink-700 dark:text-ink-300">Team — {date === localDateInTz(new Date(), tz) ? 'Today' : date}</h3>
+        <div className="flex items-center gap-1">
+          <button onClick={() => shiftDay(-1)} className="btn-ghost p-1.5"><ChevronLeft size={14} /></button>
+          <button onClick={() => setDate(localDateInTz(new Date(), tz))} className="btn-secondary text-xs px-2 py-1">Today</button>
+          <button onClick={() => shiftDay(1)} className="btn-ghost p-1.5"><ChevronRight size={14} /></button>
+        </div>
+      </div>
+      {loading ? (
+        <p className="text-sm text-ink-400 dark:text-ink-500">Loading...</p>
+      ) : rows.length === 0 ? (
+        <p className="text-sm text-ink-400 dark:text-ink-500">No team members yet.</p>
+      ) : (
+        <div className="space-y-1">
+          {rows.map(r => (
+            <div key={r.id} className="flex items-center justify-between py-1.5 border-t border-ink-100 dark:border-ink-800 first:border-t-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <Avatar url={r.avatar} name={r.name} size={6} />
+                <span className="text-sm text-ink-900 dark:text-ink-50 truncate">{r.name}</span>
+              </div>
+              <div className="flex items-center gap-4 text-xs flex-shrink-0">
+                <span className="text-ink-500 dark:text-ink-400 font-mono">{r.signIn || '—'} <span className="text-ink-300 dark:text-ink-600">→</span> {r.signOut || '—'}</span>
+                <span className={`w-20 text-right ${r.status === 'On break' ? 'text-amber-600 dark:text-amber-400' : r.status === 'Signed in' ? 'text-accent-600 dark:text-accent-400' : 'text-ink-400 dark:text-ink-500'}`}>{r.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )
