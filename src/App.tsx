@@ -19,6 +19,7 @@ import DealRoster from './pages/DealRoster'
 import Kanban from './pages/Kanban'
 import CalendarPage from './pages/Calendar'
 import Attendance from './pages/Attendance'
+import Training from './pages/Training'
 
 // Capture an invite token from /invite/:token before any auth/org logic
 // runs, and stash it in sessionStorage rather than relying on the URL —
@@ -68,6 +69,7 @@ function AppContent() {
       case 'kanban': return <Kanban />
       case 'calendar': return <CalendarPage onNavigate={setPage} />
       case 'attendance': return <Attendance year={year} />
+      case 'training': return <Training />
       case 'team': return <Team />
       case 'profile': return <Profile />
       default: return <Dashboard year={year} />

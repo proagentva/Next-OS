@@ -49,6 +49,20 @@ export function getBucketColor(bucket: string): FixedColor {
   return getColorById(BUCKET_COLOR_IDS[bucket] ?? 'cyan')
 }
 
+// Fixed mapping for the training_materials.tag taxonomy — a separate
+// taxonomy from the ledger buckets above, not user-editable.
+const TRAINING_TAG_COLOR_IDS: Record<string, string> = {
+  Acquisitions: 'green',
+  Dispositions: 'orange',
+  Operations: 'blue',
+  Admin: 'purple',
+  'Content Marketing': 'teal',
+}
+
+export function getTrainingTagColor(tag: string): FixedColor {
+  return getColorById(TRAINING_TAG_COLOR_IDS[tag] ?? 'cyan')
+}
+
 // Style for a badge/chip in the given color, adapted for the current theme:
 // solid light tint + dark text in light mode, translucent dark fill + light
 // text in dark mode (matches the existing .badge-* pattern in index.css).

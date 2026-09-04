@@ -19,6 +19,7 @@ const TAB_LABELS: Record<string, string> = {
   kanban: 'Task Manager',
   calendar: 'Calendar',
   attendance: 'Attendance',
+  training: 'Training',
   team: 'Team',
   profile: 'Profile',
 }
