@@ -4,7 +4,7 @@ import { useOrganization } from '../contexts/OrganizationContext'
 import { hasTabAccess } from '../lib/utils'
 import { ThemeToggle } from './ThemeToggle'
 import { Avatar } from './Avatar'
-import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users, Handshake, ClipboardList, Kanban, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users, Handshake, ClipboardList, Kanban, ChevronLeft, ChevronRight, CalendarRange } from 'lucide-react'
 
 interface SidebarProps {
   currentPage: string
@@ -27,6 +27,7 @@ const NAV_ITEMS = [
   { id: 'deals', label: 'Deal Sheet', icon: Handshake },
   { id: 'deal_roster', label: 'Daily Deals', icon: ClipboardList },
   { id: 'kanban', label: 'Task Manager', icon: Kanban },
+  { id: 'calendar', label: 'Calendar', icon: CalendarRange },
   { id: 'team', label: 'Team', icon: Users },
   { id: 'profile', label: 'Profile', icon: User },
 ]
