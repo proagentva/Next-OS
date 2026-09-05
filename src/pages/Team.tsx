@@ -21,6 +21,7 @@ const TAB_LABELS: Record<string, string> = {
   attendance: 'Attendance',
   training: 'Training',
   scripts: 'Scripts',
+  social_posts: 'Post Approvals',
   team: 'Team',
   profile: 'Profile',
 }

@@ -92,7 +92,7 @@ export interface Profile {
 // subset each member is granted (organization_members.allowed_tabs) varies.
 export const ORG_TAB_IDS = [
   'dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly',
-  'reports', 'settings', 'deals', 'deal_roster', 'kanban', 'calendar', 'attendance', 'training', 'scripts', 'team', 'profile',
+  'reports', 'settings', 'deals', 'deal_roster', 'kanban', 'calendar', 'attendance', 'training', 'scripts', 'social_posts', 'team', 'profile',
 ] as const
 export type OrgTabId = typeof ORG_TAB_IDS[number]
 
@@ -203,6 +203,22 @@ export interface TrainingMaterial {
   content: string | null
   tag: string
   created_by: string | null
+  created_at: string
+}
+
+export const SOCIAL_POST_STATUSES = ['pending', 'approved', 'revise', 'disapproved'] as const
+export type SocialPostStatus = typeof SOCIAL_POST_STATUSES[number]
+
+export interface SocialPost {
+  id: string
+  organization_id: string
+  submitted_by: string | null
+  caption: string | null
+  link: string | null
+  media_paths: string[]
+  status: string
+  reviewed_by: string | null
+  reviewed_at: string | null
   created_at: string
 }
 
