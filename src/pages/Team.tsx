@@ -20,6 +20,7 @@ const TAB_LABELS: Record<string, string> = {
   calendar: 'Calendar',
   attendance: 'Attendance',
   training: 'Training',
+  scripts: 'Scripts',
   team: 'Team',
   profile: 'Profile',
 }
