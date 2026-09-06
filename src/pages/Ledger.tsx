@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { ImportExportToolbar } from '../components/ImportExportToolbar'
+import { PasteSheet } from '../components/PasteSheet'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { formatCurrency, formatDate } from '../lib/utils'
 import { LEDGER_TYPES, EXPENSE_BUCKETS } from '../lib/types'
@@ -36,6 +37,7 @@ export default function Ledger({ year }: { year: number }) {
   const [filters, setFilters] = useState({ type: '', bucket: '', dateFrom: '', dateTo: '' })
   const [showAdd, setShowAdd] = useState(false)
   const [form, setForm] = useState(emptyForm)
+  const [view, setView] = useState<'table' | 'sheet'>('table')
 
   const applyFilters = useCallback((query: any) => {
     if (filters.type) query = query.eq('type', filters.type)
@@ -138,9 +140,25 @@ export default function Ledger({ year }: { year: number }) {
           <p className="text-sm text-ink-500 dark:text-ink-400">{total} record{total === 1 ? '' : 's'} — {year}</p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => setShowAdd(!showAdd)} className="btn-accent">
-            <Plus size={16} /> Add Entry
-          </button>
+          <div className="flex gap-1 bg-ink-100 dark:bg-ink-800 rounded-lg p-1">
+            <button
+              onClick={() => setView('table')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'table' ? 'bg-white dark:bg-ink-900 text-ink-900 dark:text-ink-50 shadow-sm' : 'text-ink-500 dark:text-ink-400'}`}
+            >
+              Table
+            </button>
+            <button
+              onClick={() => setView('sheet')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'sheet' ? 'bg-white dark:bg-ink-900 text-ink-900 dark:text-ink-50 shadow-sm' : 'text-ink-500 dark:text-ink-400'}`}
+            >
+              Sheet
+            </button>
+          </div>
+          {view === 'table' && (
+            <button onClick={() => setShowAdd(!showAdd)} className="btn-accent">
+              <Plus size={16} /> Add Entry
+            </button>
+          )}
           {currentOrganization && (
             <ImportExportToolbar
               schema="ledger"
@@ -154,6 +172,12 @@ export default function Ledger({ year }: { year: number }) {
         </div>
       </div>
 
+      {view === 'sheet' && currentOrganization && (
+        <PasteSheet schema="ledger" tableName="ledger_entries" organizationId={currentOrganization.id} onSaved={() => { fetchRows(); fetchTotals() }} />
+      )}
+
+      {view === 'table' && (
+      <>
       {/* Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="card p-4">
@@ -331,6 +355,8 @@ export default function Ledger({ year }: { year: number }) {
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   )
 }

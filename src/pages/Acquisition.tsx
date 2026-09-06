@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { ImportExportToolbar } from '../components/ImportExportToolbar'
+import { PasteSheet } from '../components/PasteSheet'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { formatDate, formatNumber } from '../lib/utils'
 import type { AcqActivity } from '../lib/types'
@@ -40,6 +41,7 @@ export default function Acquisition({ year }: { year: number }) {
   const [filters, setFilters] = useState({ employee: '', role: '', dateFrom: '', dateTo: '' })
   const [showAdd, setShowAdd] = useState(false)
   const [form, setForm] = useState(emptyForm)
+  const [view, setView] = useState<'table' | 'sheet'>('table')
 
   const fetchRows = useCallback(async () => {
     setLoading(true)
@@ -110,9 +112,25 @@ export default function Acquisition({ year }: { year: number }) {
           <p className="text-sm text-ink-500 dark:text-ink-400">{total} records — {year}</p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => setShowAdd(!showAdd)} className="btn-accent">
-            <Plus size={16} /> Add Entry
-          </button>
+          <div className="flex gap-1 bg-ink-100 dark:bg-ink-800 rounded-lg p-1">
+            <button
+              onClick={() => setView('table')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'table' ? 'bg-white dark:bg-ink-900 text-ink-900 dark:text-ink-50 shadow-sm' : 'text-ink-500 dark:text-ink-400'}`}
+            >
+              Table
+            </button>
+            <button
+              onClick={() => setView('sheet')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'sheet' ? 'bg-white dark:bg-ink-900 text-ink-900 dark:text-ink-50 shadow-sm' : 'text-ink-500 dark:text-ink-400'}`}
+            >
+              Sheet
+            </button>
+          </div>
+          {view === 'table' && (
+            <button onClick={() => setShowAdd(!showAdd)} className="btn-accent">
+              <Plus size={16} /> Add Entry
+            </button>
+          )}
           <ImportExportToolbar
             schema="acq"
             tableName="acq_activity"
@@ -124,7 +142,11 @@ export default function Acquisition({ year }: { year: number }) {
         </div>
       </div>
 
-      {showAdd && (
+      {view === 'sheet' && (
+        <PasteSheet schema="acq" tableName="acq_activity" organizationId={currentOrganization!.id} onSaved={fetchRows} />
+      )}
+
+      {view === 'table' && showAdd && (
         <div className="card p-4 animate-fade-in space-y-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
@@ -159,6 +181,8 @@ export default function Acquisition({ year }: { year: number }) {
         </div>
       )}
 
+      {view === 'table' && (
+      <>
       {/* Filters */}
       <div className="card p-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -263,6 +287,8 @@ export default function Acquisition({ year }: { year: number }) {
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   )
 }
