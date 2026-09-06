@@ -1,11 +1,13 @@
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../contexts/ThemeContext'
 import { useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Avatar } from '../components/Avatar'
-import { Mail, Shield, LogOut, Camera } from 'lucide-react'
+import { Mail, Shield, LogOut, Camera, Sun, Moon } from 'lucide-react'
 
 export default function Profile() {
   const { user, profile, updateProfile, signOut } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const [displayName, setDisplayName] = useState(profile?.display_name || '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -98,6 +100,19 @@ export default function Profile() {
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
           {saved && <span className="text-sm text-accent-600 dark:text-accent-400">Saved!</span>}
+        </div>
+      </div>
+
+      <div className="card p-6 space-y-3 mt-6">
+        <h2 className="text-sm font-semibold text-ink-700 dark:text-ink-300">Preferences</h2>
+        <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-ink-50 dark:bg-ink-800 border border-ink-200 dark:border-ink-800">
+          <div className="flex items-center gap-2">
+            {theme === 'dark' ? <Moon size={16} className="text-ink-400 dark:text-ink-500" /> : <Sun size={16} className="text-ink-400 dark:text-ink-500" />}
+            <span className="text-sm text-ink-700 dark:text-ink-300">Theme</span>
+          </div>
+          <button onClick={toggleTheme} className="btn-secondary text-xs">
+            Switch to {theme === 'dark' ? 'Light' : 'Dark'}
+          </button>
         </div>
       </div>
 
