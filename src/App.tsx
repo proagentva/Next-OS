@@ -22,6 +22,7 @@ import Attendance from './pages/Attendance'
 import Training from './pages/Training'
 import Scripts from './pages/Scripts'
 import SocialPosts from './pages/SocialPosts'
+import Requests from './pages/Requests'
 
 // Capture an invite token from /invite/:token before any auth/org logic
 // runs, and stash it in sessionStorage rather than relying on the URL —
@@ -74,6 +75,7 @@ function AppContent() {
       case 'training': return <Training />
       case 'scripts': return <Scripts />
       case 'social_posts': return <SocialPosts />
+      case 'requests': return <Requests />
       case 'team': return <Team />
       case 'profile': return <Profile />
       default: return <Dashboard year={year} />

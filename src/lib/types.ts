@@ -92,7 +92,7 @@ export interface Profile {
 // subset each member is granted (organization_members.allowed_tabs) varies.
 export const ORG_TAB_IDS = [
   'dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly',
-  'reports', 'settings', 'deals', 'deal_roster', 'kanban', 'calendar', 'attendance', 'training', 'scripts', 'social_posts', 'team', 'profile',
+  'reports', 'settings', 'deals', 'deal_roster', 'kanban', 'calendar', 'attendance', 'training', 'scripts', 'social_posts', 'requests', 'team', 'profile',
 ] as const
 export type OrgTabId = typeof ORG_TAB_IDS[number]
 
@@ -225,6 +225,30 @@ export interface SocialPost {
 export interface SocialPostComment {
   id: string
   post_id: string
+  organization_id: string
+  user_id: string | null
+  body: string
+  created_at: string
+}
+
+export const REQUEST_STATUSES = ['not_started', 'started', 'under_progress', 'stalled', 'done'] as const
+export type RequestStatus = typeof REQUEST_STATUSES[number]
+
+export interface OrgRequest {
+  id: string
+  organization_id: string
+  submitted_by: string | null
+  title: string
+  description: string | null
+  status: string
+  reviewed_by: string | null
+  reviewed_at: string | null
+  created_at: string
+}
+
+export interface RequestComment {
+  id: string
+  request_id: string
   organization_id: string
   user_id: string | null
   body: string
