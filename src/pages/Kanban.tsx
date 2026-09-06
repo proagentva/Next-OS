@@ -4,7 +4,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { KANBAN_LISTS, ORIGIN_BADGE, type KanbanListKey } from '../lib/kanban'
-import { FIXED_COLORS, getColorById, colorBadgeStyle } from '../lib/colors'
+import { FIXED_COLORS, getColorById, colorBadgeStyle, getKanbanTagColor } from '../lib/colors'
+import { KANBAN_TAGS } from '../lib/types'
 import type { KanbanCard, KanbanComment, Profile } from '../lib/types'
 import { formatDate } from '../lib/utils'
 import { Avatar } from '../components/Avatar'
@@ -17,6 +18,7 @@ const emptyForm = {
   due_date: '',
   color_id: FIXED_COLORS[0].id,
   assigned_to: '',
+  tag: '',
 }
 
 type Member = { id: string; name: string; avatar_url: string | null }
@@ -71,6 +73,7 @@ export default function Kanban() {
       due_date: form.due_date || null,
       color_id: form.color_id,
       assigned_to: form.assigned_to || null,
+      tag: form.tag || null,
       position: nextPosition,
       created_by: user?.id,
     })
@@ -204,6 +207,13 @@ export default function Kanban() {
                 {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
             </div>
+            <div>
+              <label className="label">Tag</label>
+              <select value={form.tag} onChange={e => setForm({ ...form, tag: e.target.value })} className="input">
+                <option value="">No tag</option>
+                {KANBAN_TAGS.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
             <div className="md:col-span-2">
               <label className="label">Color</label>
               <div className="flex flex-wrap gap-2">
@@ -284,6 +294,9 @@ export default function Kanban() {
                         )}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 flex-wrap">
+                            {card.tag && (
+                              <span className="badge" style={colorBadgeStyle(getKanbanTagColor(card.tag), dark)}>{card.tag}</span>
+                            )}
                             {card.due_date && (
                               <span className="badge-gray inline-flex items-center gap-1">
                                 <CalendarDays size={11} /> {formatDate(card.due_date)}
@@ -343,7 +356,7 @@ export default function Kanban() {
             {openCard_.description && (
               <p className="text-sm text-ink-600 dark:text-ink-300">{openCard_.description}</p>
             )}
-            <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-4 text-sm flex-wrap">
               {openCard_.due_date && (
                 <span className="badge-gray inline-flex items-center gap-1">
                   <CalendarDays size={12} /> {formatDate(openCard_.due_date)}
@@ -358,6 +371,17 @@ export default function Kanban() {
                 >
                   <option value="">Unassigned</option>
                   {members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-ink-500 dark:text-ink-400">Tag:</span>
+                <select
+                  value={openCard_.tag || ''}
+                  onChange={e => updateCard(openCard_.id, { tag: e.target.value || null })}
+                  className="input py-1 w-36"
+                >
+                  <option value="">No tag</option>
+                  {KANBAN_TAGS.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
             </div>

@@ -63,6 +63,20 @@ export function getTrainingTagColor(tag: string): FixedColor {
   return getColorById(TRAINING_TAG_COLOR_IDS[tag] ?? 'cyan')
 }
 
+// Fixed mapping for the kanban_cards.tag taxonomy — a separate taxonomy
+// from the ledger buckets and training tags above, not user-editable.
+const KANBAN_TAG_COLOR_IDS: Record<string, string> = {
+  Ops: 'blue',
+  Acquisition: 'green',
+  Disposition: 'orange',
+  Admin: 'purple',
+  Request: 'amber',
+}
+
+export function getKanbanTagColor(tag: string): FixedColor {
+  return getColorById(KANBAN_TAG_COLOR_IDS[tag] ?? 'cyan')
+}
+
 // Style for a badge/chip in the given color, adapted for the current theme:
 // solid light tint + dark text in light mode, translucent dark fill + light
 // text in dark mode (matches the existing .badge-* pattern in index.css).
