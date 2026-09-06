@@ -77,6 +77,18 @@ export function getKanbanTagColor(tag: string): FixedColor {
   return getColorById(KANBAN_TAG_COLOR_IDS[tag] ?? 'cyan')
 }
 
+// Fixed mapping for the ledger_entries.type taxonomy (§9's other half —
+// bucket colors above cover the same table's `bucket` column).
+const LEDGER_TYPE_COLOR_IDS: Record<string, string> = {
+  Income: 'green',
+  Expense: 'red',
+  Transfer: 'blue',
+}
+
+export function getLedgerTypeColor(type: string): FixedColor {
+  return getColorById(LEDGER_TYPE_COLOR_IDS[type] ?? 'cyan')
+}
+
 // Style for a badge/chip in the given color, adapted for the current theme:
 // solid light tint + dark text in light mode, translucent dark fill + light
 // text in dark mode (matches the existing .badge-* pattern in index.css).

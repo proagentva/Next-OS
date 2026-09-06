@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard'
 import Acquisition from './pages/Acquisition'
 import Disposition from './pages/Disposition'
 import Marketing from './pages/Marketing'
+import Ledger from './pages/Ledger'
 import QuarterlyView from './pages/QuarterlyView'
 import Settings from './pages/Settings'
 import Reports from './pages/Reports'
@@ -63,6 +64,7 @@ function AppContent() {
       case 'acquisition': return <Acquisition year={year} />
       case 'disposition': return <Disposition year={year} />
       case 'marketing': return <Marketing year={year} />
+      case 'ledger': return <Ledger year={year} />
       case 'quarterly': return <QuarterlyView year={year} />
       case 'reports': return <Reports year={year} />
       case 'settings': return <Settings year={year} />

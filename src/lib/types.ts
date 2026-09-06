@@ -2,8 +2,10 @@
 
 export type AcqRole = 'ACQ Manager' | 'Cold Caller' | 'FUS' | 'OM' | 'Admin' | 'SMM' | 'PPC' | 'PPL'
 export type DispoRole = 'Disposition Agent' | 'Sr Dispo' | 'Jr Dispo'
-export type LedgerType = 'Expense' | 'Income' | 'Transfer'
-export type ExpenseBucket = 'Acquisition' | 'Processing' | 'Commissions' | 'Admin' | 'Misc' | 'Non-Operating'
+export const LEDGER_TYPES = ['Income', 'Expense', 'Transfer'] as const
+export type LedgerType = typeof LEDGER_TYPES[number]
+export const EXPENSE_BUCKETS = ['Acquisition', 'Processing', 'Commissions', 'Admin', 'Misc', 'Non-Operating'] as const
+export type ExpenseBucket = typeof EXPENSE_BUCKETS[number]
 
 export interface AcqActivity {
   id: string
@@ -51,6 +53,7 @@ export interface DispoActivity {
 
 export interface LedgerEntry {
   id: string
+  organization_id: string
   date: string
   description: string
   category: string
@@ -65,6 +68,7 @@ export interface LedgerEntry {
   quarter: number
   expense_amt: number
   income_amt: number
+  created_at: string
 }
 
 export interface MarketingChannel {
@@ -91,7 +95,7 @@ export interface Profile {
 // Canonical tab keys — identical across every organization, only which
 // subset each member is granted (organization_members.allowed_tabs) varies.
 export const ORG_TAB_IDS = [
-  'dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly',
+  'dashboard', 'acquisition', 'disposition', 'marketing', 'ledger', 'quarterly',
   'reports', 'settings', 'deals', 'deal_roster', 'kanban', 'calendar', 'attendance', 'training', 'scripts', 'social_posts', 'team', 'profile',
 ] as const
 export type OrgTabId = typeof ORG_TAB_IDS[number]

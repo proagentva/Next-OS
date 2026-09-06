@@ -11,6 +11,7 @@ const TAB_LABELS: Record<string, string> = {
   acquisition: 'Acquisition',
   disposition: 'Disposition',
   marketing: 'Marketing',
+  ledger: 'Ledger',
   quarterly: 'Quarterly View',
   reports: 'Reports',
   settings: 'Settings',

@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useOrganization } from '../contexts/OrganizationContext'
 import { hasTabAccess } from '../lib/utils'
 import { Avatar } from './Avatar'
-import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users, Handshake, ClipboardList, Kanban, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CalendarRange, Clock, GraduationCap, ScrollText, ThumbsUp } from 'lucide-react'
+import { LayoutDashboard, TrendingUp, TrendingDown, Megaphone, CalendarDays, FileText, Settings, LogOut, User, Users, Handshake, ClipboardList, Kanban, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CalendarRange, Clock, GraduationCap, ScrollText, ThumbsUp, Receipt } from 'lucide-react'
 
 interface SidebarProps {
   currentPage: string
@@ -13,13 +13,14 @@ interface SidebarProps {
 }
 
 // Pages whose data is scoped to a single calendar year.
-const YEAR_SCOPED_PAGES = new Set(['dashboard', 'acquisition', 'disposition', 'marketing', 'quarterly', 'reports', 'settings', 'attendance'])
+const YEAR_SCOPED_PAGES = new Set(['dashboard', 'acquisition', 'disposition', 'marketing', 'ledger', 'quarterly', 'reports', 'settings', 'attendance'])
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'acquisition', label: 'Acquisition', icon: TrendingUp },
   { id: 'disposition', label: 'Disposition', icon: TrendingDown },
   { id: 'marketing', label: 'Marketing', icon: Megaphone },
+  { id: 'ledger', label: 'Ledger', icon: Receipt },
   { id: 'quarterly', label: 'Quarterly View', icon: CalendarDays },
   { id: 'reports', label: 'Reports', icon: FileText },
   { id: 'settings', label: 'Settings', icon: Settings },
